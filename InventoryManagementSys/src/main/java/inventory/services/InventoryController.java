@@ -30,14 +30,23 @@ public class InventoryController {
 //		System.out.println("user: " + user.GetUsername() + "...ACTION: " + ACTION);
 		// confirm authorization
 		if (authorizer.IsAuthorized(user, ACTION)) {
-			
-			myObj.nextLine();
+
 			System.out.println("Enter Product Name: ");
 			String productName = myObj.nextLine();
 			System.out.println("Enter Product Quantity: ");
-			int quantity = myObj.nextInt();
+			int quantity = 0;
+			try {
+				quantity = Integer.parseInt(myObj.nextLine());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			System.out.println("Enter Product Price");
-			double price = myObj.nextDouble();
+			double price = 0;
+			try {
+				price = Double.parseDouble(myObj.nextLine());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 			// create Product object
 			Product newProduct = new Product(productName, quantity, price);
@@ -108,7 +117,12 @@ public class InventoryController {
 			
 			try {
 				System.out.println("Enter product ID you wish to update: ");
-				int id = myObj.nextInt();
+				int id = 0;
+				try {
+					id = Integer.parseInt(myObj.nextLine());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				System.out.println();
 				
 				// find product in the database
@@ -133,11 +147,21 @@ public class InventoryController {
 				System.out.println();
 				
 				System.out.print("Enter new product quantity: ");
-				int newQuantity = myObj.nextInt();
+				int newQuantity = 0;
+				try {
+					newQuantity = Integer.parseInt(myObj.nextLine());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				System.out.println();
 				
 				System.out.print("Enter new product price: ");
-				double newPrice = myObj.nextDouble();
+				double newPrice = 0;
+				try {
+					newPrice = Double.parseDouble(myObj.nextLine());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				System.out.println();
 			
 				foundProduct.SetProductName(newName);
@@ -192,11 +216,11 @@ public class InventoryController {
 		
 		// confirm authorization
 		if (authorizer.IsAuthorized(user, ACTION)) {
-			System.out.println("Enter customer\'s first name: ");
+			System.out.println("Enter customer's first name: ");
 			String firstName = myObj.nextLine();
-			System.out.println("Enter customer\'s last name: ");
+			System.out.println("Enter customer's last name: ");
 			String lastName = myObj.nextLine();
-			System.out.println("Enter customer\'s phone number: ");
+			System.out.println("Enter customer's phone number: ");
 			// FIXME: parse into valid phone number format
 			String phoneNum = myObj.nextLine();
 			
@@ -225,12 +249,17 @@ public class InventoryController {
 		if (authorizer.IsAuthorized(user, ACTION)) {
 			
 			System.out.print("Enter the ID of the customer you wish to delete: ");
-			int id = myObj.nextInt();
+			int id = 0;
+			try {
+				id = Integer.parseInt(myObj.nextLine());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			System.out.println();
 			System.out.println("Are you sure you wish to delete customer with ID of " + id + "? Type yes or no.");
-			myObj.nextLine();
 			String answer = myObj.nextLine();
-			if (answer.equals("yes")) {
+			System.out.println("myObj: " + answer);
+			if (answer.equalsIgnoreCase("yes")) {
 				// search database for customerId
 				if (handler.deleteCustomer(id)) {
 					System.out.println("Customer with ID of " + id + " has been deleted.");
@@ -243,6 +272,100 @@ public class InventoryController {
 				//FIXME print this to the user after GUI
 				System.out.println("Returning to main menu...");
 				return;
+			}
+		}
+	}
+
+
+	/**
+	 * Update a customer in the database using customerId
+	 */
+	public void updateCustomer(User user) throws Exception {
+
+		final String ACTION = "update";
+
+		// confirm authorization
+		if (authorizer.IsAuthorized(user, ACTION)) {
+
+			Customer foundCustomer = null;
+
+			try {
+				System.out.println("Enter Customer ID you wish to update: ");
+				int id = 0;
+				try {
+					id = Integer.parseInt(myObj.nextLine());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println();
+
+				// find customer in the database
+				foundCustomer = handler.getCustomer(id);
+
+				if (foundCustomer == null) {
+					System.out.println("Customer ID was not found in the database.");
+					return;
+				}
+				else {
+					System.out.println("Customer found...");
+				}
+
+				System.out.println("\nCustomer ID: " + foundCustomer.GetCustomerId());
+				System.out.println("Customer name: " + foundCustomer.GetCustomerFullName());
+				System.out.println("Customer phone number: " + foundCustomer.GetCustomerPhone());
+
+				// get new values
+				System.out.println();
+				System.out.print("Enter new first name for customer: ");
+				String newFirstName = myObj.nextLine();
+				System.out.println();
+
+				System.out.print("Enter new last name for customer: ");
+				String newLastName = myObj.nextLine();
+				System.out.println();
+
+				System.out.print("Enter new phone number for customer: ");
+				String newPhoneNum = myObj.nextLine();
+				System.out.println();
+
+				foundCustomer.SetCustomerFirstName(newFirstName);
+				foundCustomer.SetCustomerLastName(newLastName);
+				foundCustomer.SetCustomerPhone(newPhoneNum);
+
+				// update database with new product values
+				if (handler.updateCustomer(foundCustomer)) {
+					System.out.println("Customer was successfully updated in the database.");
+				}
+				else {
+					System.out.println("Customer has not been updated");
+				}
+
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Display customer table from database
+	 */
+	public void displayCustomers(User user) {
+
+		final String ACTION = "read";
+
+		// confirm authorization
+
+		if (authorizer.IsAuthorized(user, ACTION)) {
+
+			// retrieve list
+			ArrayList<Customer> customerList = handler.getAllCustomers();
+
+			System.out.println("\n                   CUSTOMER LIST:\n");
+			System.out.println(String.format("%-30s %-30s %-30s %-30s", "Customer ID", "First Name", "Last Name", "Phone Number"));
+
+			// print out list
+			for(Customer c: customerList) {
+				System.out.println(c);
 			}
 		}
 	}
@@ -291,7 +414,6 @@ public class InventoryController {
 		User authenticatedUser = null;
 		
 		try {
-//			myObj.nextLine();
 			System.out.println("Welcome to the inventory management system.");
 			System.out.println("\nPlease enter your username: ");
 			String username = myObj.nextLine();
@@ -362,12 +484,14 @@ public class InventoryController {
 //					// delete customer
 					deleteCustomer(user);
 					break;
-//				case 7:
+				case 7:
 //					// update a customer
-//					break;
-//				case 8:
+					updateCustomer(user);
+					break;
+				case 8:
 //					// display all customers
-//					break;
+					displayCustomers(user);
+					break;
 				case 9:
 					System.out.println("Goodbye");
 					break;

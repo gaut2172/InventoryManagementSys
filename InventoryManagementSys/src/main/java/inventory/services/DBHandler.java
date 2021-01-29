@@ -90,7 +90,6 @@ public class DBHandler {
 	/**
 	 * Update an existing product record using a productId
 	 * @param product user generated product with new values
-	 * @param productId user gives a productId of the product to update
 	 * @return true if there were rows affected
 	 */
 	public boolean updateProduct(Product product) {
@@ -230,7 +229,12 @@ public class DBHandler {
 	
 		return result;
 	}
-	
+
+	/**
+	 * Delete a customer from the database
+	 * @param customerId
+	 * @return true if 1 or more rows affected
+	 */
 	public boolean deleteCustomer(int customerId) {
 		
 		boolean result = false;
@@ -259,8 +263,12 @@ public class DBHandler {
 	
 		return result;
 	}
-	
-	
+
+	/**
+	 * Update a customer in the database
+	 * @param updatedInfo - new info
+	 * @return true if 1 or more rows affected
+	 */
 	public boolean updateCustomer(Customer updatedInfo) {
 		boolean result = false;
 		
@@ -291,5 +299,77 @@ public class DBHandler {
 		
 		return result;
 	}
-	
+
+
+	/**
+	 * Retrieve customer from database by customerId
+	 * @param customerId
+	 */
+	public Customer getCustomer(int customerId) {
+
+		Customer foundCustomer = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM customer WHERE customerId = ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statment
+			stmt.setInt(1, customerId);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// FIXME: check to see if the ResultSet has more than one result (potential bug)
+			while (results.next()) {
+				foundCustomer = new Customer(results.getInt(1), results.getString(2), results.getString(3), results.getString(4));
+			}
+
+			DBConnection.disconnect(conn);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return foundCustomer;
+	}
+
+
+	/**
+	 * Get list of all customers in the database
+	 * @return arrayList of all the customers
+	 */
+	public ArrayList<Customer> getAllCustomers() {
+		ArrayList<Customer> customerArrayList = new ArrayList<Customer>();
+
+		Customer customer = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM customer";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet
+			while (results.next()) {
+				customer = new Customer(results.getInt(1), results.getString(2), results.getString(3), results.getString(4));
+
+				customerArrayList.add(customer);
+			}
+
+			DBConnection.disconnect(conn);
+
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return customerArrayList;
+	}
+
+
 }
