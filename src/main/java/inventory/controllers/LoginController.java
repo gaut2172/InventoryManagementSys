@@ -1,5 +1,7 @@
 package inventory.controllers;
 
+import inventory.models.User;
+import inventory.services.MiddleLogin;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,11 +19,17 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
+    private MiddleLogin authenticator = new MiddleLogin();
+
     public void Login(ActionEvent event) {
         try {
-            if (status == null) {
-                System.out.println("it was null");
-//                label_status.setText("Login Successful");
+            User user = null;
+            String username = textField_username.getText();
+            String pwd = passwordField.getText();
+            user = authenticator.authenticate(username, pwd);
+
+            if (user != null) {
+                status.setText("Login Successful");
             } else {
                 status.setText("Please try again.");
             }
