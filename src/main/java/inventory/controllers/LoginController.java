@@ -37,4 +37,8 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+
+    public void onEnter(ActionEvent event) {
+        this.Login(event);
+    }
 }
