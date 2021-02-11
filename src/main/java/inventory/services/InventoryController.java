@@ -1,5 +1,6 @@
 package inventory.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,45 +22,45 @@ public class InventoryController {
 	/**
 	 * Add a given product to the database
 	 */
-	public void addProduct(User user) {
-		//FIXME: add UI so I'm not using console
-		
-		final String ACTION = "create";
-		
-
-//		System.out.println("user: " + user.GetUsername() + "...ACTION: " + ACTION);
-		// confirm authorization
-		if (authorizer.IsAuthorized(user, ACTION)) {
-
-			System.out.println("Enter Product Name: ");
-			String productName = myObj.nextLine();
-			System.out.println("Enter Product Quantity: ");
-			int quantity = 0;
-			try {
-				quantity = Integer.parseInt(myObj.nextLine());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println("Enter Product Price");
-			double price = 0;
-			try {
-				price = Double.parseDouble(myObj.nextLine());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			// create Product object
-			Product newProduct = new Product(productName, quantity, price);
-			
-			// Add Product object to the database
-			if (handler.insertProduct(newProduct)) {
-				System.out.println("Product successfully saved to database!");
-			}
-			else {
-				System.out.println("Failed to save product to database");
-			}	
-		}
-	}
+//	public void addProduct(User user) {
+//		//FIXME: add UI so I'm not using console
+//
+//		final String ACTION = "create";
+//
+//
+////		System.out.println("user: " + user.GetUsername() + "...ACTION: " + ACTION);
+//		// confirm authorization
+//		if (authorizer.IsAuthorized(user, ACTION)) {
+//
+//			System.out.println("Enter Product Name: ");
+//			String productName = myObj.nextLine();
+//			System.out.println("Enter Product Quantity: ");
+//			int quantity = 0;
+//			try {
+//				quantity = Integer.parseInt(myObj.nextLine());
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			System.out.println("Enter Product Price");
+//			double price = 0;
+//			try {
+//				price = Double.parseDouble(myObj.nextLine());
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//
+//			// create Product object
+//			Product newProduct = new Product(productName, quantity, price);
+//
+//			// Add Product object to the database
+//			if (handler.insertProduct(newProduct)) {
+//				System.out.println("Product successfully saved to database!");
+//			}
+//			else {
+//				System.out.println("Failed to save product to database");
+//			}
+//		}
+//	}
 	
 	/**
 	 * Delete given product from database
@@ -104,83 +105,83 @@ public class InventoryController {
 	/**
 	 * Update a product in the database using productId
 	 */
-	public void updateProduct(User user) throws Exception {
-		
-		final String ACTION = "update";
-		
-		// confirm authorization
-		if (authorizer.IsAuthorized(user, ACTION)) {
-			
-		
-		
-			Product foundProduct = null;
-			
-			try {
-				System.out.println("Enter product ID you wish to update: ");
-				int id = 0;
-				try {
-					id = Integer.parseInt(myObj.nextLine());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				System.out.println();
-				
-				// find product in the database
-				foundProduct = handler.getProduct(id);
-	
-				if (foundProduct == null) {
-					System.out.println("Product ID was not found in the database.");
-					return;
-				}
-				
-				System.out.println("\nProduct ID: " + foundProduct.GetProductId());
-				System.out.println("Product name: " + foundProduct.GetProductName());
-				System.out.println("Product quantity: " + foundProduct.GetQuantity());
-				// FIXME: format as currency
-				System.out.println("Product price: " + foundProduct.GetPrice());
-				
-				// get new values
-				myObj.nextLine();
-				System.out.println();
-				System.out.print("Enter new product name: ");
-				String newName = myObj.nextLine();
-				System.out.println();
-				
-				System.out.print("Enter new product quantity: ");
-				int newQuantity = 0;
-				try {
-					newQuantity = Integer.parseInt(myObj.nextLine());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				System.out.println();
-				
-				System.out.print("Enter new product price: ");
-				double newPrice = 0;
-				try {
-					newPrice = Double.parseDouble(myObj.nextLine());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				System.out.println();
-			
-				foundProduct.SetProductName(newName);
-				foundProduct.SetQuantity(newQuantity);
-				foundProduct.SetPrice(newPrice);
-				
-				// update database with new product values
-				if (handler.updateProduct(foundProduct)) {
-					System.out.println("Product was successfully updated in the database.");
-				}
-				else {
-					System.out.println("Product has not been updated");
-				}
-						
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	public void updateProduct(User user) throws Exception {
+//
+//		final String ACTION = "update";
+//
+//		// confirm authorization
+//		if (authorizer.IsAuthorized(user, ACTION)) {
+//
+//
+//
+//			Product foundProduct = null;
+//
+//			try {
+//				System.out.println("Enter product ID you wish to update: ");
+//				int id = 0;
+//				try {
+//					id = Integer.parseInt(myObj.nextLine());
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				System.out.println();
+//
+//				// find product in the database
+//				foundProduct = handler.getProduct(id);
+//
+//				if (foundProduct == null) {
+//					System.out.println("Product ID was not found in the database.");
+//					return;
+//				}
+//
+//				System.out.println("\nProduct ID: " + foundProduct.GetProductId());
+//				System.out.println("Product name: " + foundProduct.GetProductName());
+//				System.out.println("Product quantity: " + foundProduct.GetQuantity());
+//				// FIXME: format as currency
+//				System.out.println("Product price: " + foundProduct.GetPrice());
+//
+//				// get new values
+//				myObj.nextLine();
+//				System.out.println();
+//				System.out.print("Enter new product name: ");
+//				String newName = myObj.nextLine();
+//				System.out.println();
+//
+//				System.out.print("Enter new product quantity: ");
+//				int newQuantity = 0;
+//				try {
+//					newQuantity = Integer.parseInt(myObj.nextLine());
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				System.out.println();
+//
+//				System.out.print("Enter new product price: ");
+//				BigDecimal newPrice = 0;
+//				try {
+////					newPrice = BigDecimal.parse(myObj.nextLine());
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//				System.out.println();
+//
+//				foundProduct.SetProductName(newName);
+//				foundProduct.SetQuantity(newQuantity);
+//				foundProduct.SetPrice(newPrice);
+//
+//				// update database with new product values
+//				if (handler.updateProduct(foundProduct)) {
+//					System.out.println("Product was successfully updated in the database.");
+//				}
+//				else {
+//					System.out.println("Product has not been updated");
+//				}
+//
+//			} catch(Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	
 	/**
@@ -462,7 +463,7 @@ public class InventoryController {
 				switch (choice) {
 				case 1:
 					// add new product
-					addProduct(user);
+//					addProduct(user);
 					break;
 				case 2:
 					// delete product
@@ -470,7 +471,7 @@ public class InventoryController {
 					break;
 				case 3:
 //					// update a product
-					updateProduct(user);
+//					updateProduct(user);
 					break;
 				case 4:
 					// display all products
