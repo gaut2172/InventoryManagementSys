@@ -33,7 +33,7 @@ public class DBHandler {
 			// insert values into prepared statement
 			stmt.setString(1, myProduct.GetProductName());
 			stmt.setInt(2,  myProduct.GetQuantity());
-			stmt.setBigDecimal(3, myProduct.GetPrice());
+			stmt.setDouble(3, myProduct.GetPrice());
 			
 			// execute SQL command
 			int inserted = stmt.executeUpdate();
@@ -104,7 +104,7 @@ public class DBHandler {
 			// insert values into prepared statement
 			stmt.setString(1, product.GetProductName());
 			stmt.setInt(2, product.GetQuantity());
-			stmt.setBigDecimal(3, product.GetPrice());
+			stmt.setDouble(3, product.GetPrice());
 			stmt.setInt(4, product.GetProductId());
 			
 			// execute SQL command
@@ -133,7 +133,7 @@ public class DBHandler {
 		
 		try {
 			// parameterize SQL statement to deter SQL injection attacks
-			String sql = "SELECT * FROM view_products_1 WHERE ProductId = ?";
+			String sql = "SELECT * FROM product WHERE ProductId = ?";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
@@ -145,8 +145,7 @@ public class DBHandler {
 			
 			// FIXME: check to see if the ResultSet has more than one result (potential bug)
 			while (results.next()) {
-				foundProduct = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
-						results.getBigDecimal(5), results.getString(6), results.getString(7));
+				foundProduct = new Product(results.getInt(1), results.getString(2), results.getInt(3), results.getDouble(4));
 			}
 			
 			DBConnection.disconnect(conn);
@@ -163,13 +162,13 @@ public class DBHandler {
 	 * @return arrayList of all the products
 	 */
 	public ArrayList<Product> getAllProducts() {
-		ArrayList<Product> productsList = new ArrayList<>();
+		ArrayList<Product> productsList = new ArrayList<Product>();
 		
 		Product product = null;
 		
 		try {
 			// parameterize SQL statement to deter SQL injection attacks
-			String sql = "SELECT * FROM view_products_1";
+			String sql = "SELECT * FROM product";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
@@ -178,9 +177,8 @@ public class DBHandler {
 			
 			// iterate through ResultSet
 			while (results.next()) {
-				product = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
-						results.getBigDecimal(5), results.getString(6), results.getString(7));
-
+				product = new Product(results.getInt(1), results.getString(2), results.getInt(3), results.getDouble(4));
+				
 				productsList.add(product);
 			}
 			
