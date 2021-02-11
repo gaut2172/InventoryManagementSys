@@ -46,7 +46,7 @@ public class DBConnection {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			// FIXME: Move this DB username and password to an encrypted external file
-			Connection conn = DriverManager.getConnection(URL+PARAMETERS, "", "");
+			Connection conn = DriverManager.getConnection(URL+PARAMETERS, "admin", "password");
 			if (conn == null) {
 				System.out.println("Problem connecting to database");
 			}

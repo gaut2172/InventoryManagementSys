@@ -89,18 +89,18 @@ public class ProductsViewController implements Initializable {
             // UPC column
             upcColumn = new TableColumn<>("UPC");
             upcColumn.setMinWidth(200);
-            upcColumn.setCellValueFactory(new PropertyValueFactory<>("upc"));
+            upcColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("upc"));
 
 
             // product name column
             productNameColumn = new TableColumn<>("Product Name");
             productNameColumn.setMinWidth(200);
-            productNameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+            productNameColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("productName"));
 
             // in stock quantity column
             inStockColumn = new TableColumn<>("Stock Quantity");
             inStockColumn.setMinWidth(100);
-            inStockColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+            inStockColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("quantity"));
 
             // retail price column
             retailPriceColumn = new TableColumn<>("Retail Price");
@@ -122,8 +122,12 @@ public class ProductsViewController implements Initializable {
             for (int i = 0; i < arrayList.size(); i++) {
                 System.out.println(arrayList.get(i));
             }
+            System.out.println("\n");
 
-            productsList = FXCollections.observableList(arrayList);
+            productsList = FXCollections.observableArrayList(arrayList);
+            for (int i = 0; i < productsList.size(); i++) {
+                System.out.println(productsList.get(i));
+            }
             productsTable.setItems(productsList);
 
 
