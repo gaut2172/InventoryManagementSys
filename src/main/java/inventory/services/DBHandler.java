@@ -31,9 +31,9 @@ public class DBHandler {
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
 			// insert values into prepared statement
-			stmt.setString(1, myProduct.GetProductName());
-			stmt.setInt(2,  myProduct.GetQuantity());
-			stmt.setBigDecimal(3, myProduct.GetPrice());
+			stmt.setString(1, myProduct.getProductName());
+			stmt.setInt(2,  myProduct.getQuantity());
+			stmt.setDouble(3, myProduct.getPrice());
 			
 			// execute SQL command
 			int inserted = stmt.executeUpdate();
@@ -102,10 +102,10 @@ public class DBHandler {
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
 			// insert values into prepared statement
-			stmt.setString(1, product.GetProductName());
-			stmt.setInt(2, product.GetQuantity());
-			stmt.setBigDecimal(3, product.GetPrice());
-			stmt.setInt(4, product.GetProductId());
+			stmt.setString(1, product.getProductName());
+			stmt.setInt(2, product.getQuantity());
+			stmt.setDouble(3, product.getPrice());
+			stmt.setInt(4, product.getProductID());
 			
 			// execute SQL command
 			int rowsUpdated = stmt.executeUpdate();
@@ -146,7 +146,7 @@ public class DBHandler {
 			// FIXME: check to see if the ResultSet has more than one result (potential bug)
 			while (results.next()) {
 				foundProduct = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
-						results.getBigDecimal(5), results.getString(6), results.getString(7));
+						results.getDouble(5), results.getString(6), results.getString(7));
 			}
 			
 			DBConnection.disconnect(conn);
@@ -179,7 +179,7 @@ public class DBHandler {
 			// iterate through ResultSet
 			while (results.next()) {
 				product = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
-						results.getBigDecimal(5), results.getString(6), results.getString(7));
+						results.getDouble(5), results.getString(6), results.getString(7));
 
 				productsList.add(product);
 			}

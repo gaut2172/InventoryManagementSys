@@ -1,107 +1,95 @@
 package inventory.models;
 
-import java.math.BigDecimal;
+import javafx.beans.property.*;
 
 public class Product {
 
-	
-	private int productId;
-	private String upc;
-	private String productName;
-	private int quantity;
-	// FIXME: change this to BigDecimal
-	private BigDecimal price;
-	private String manufacturer;
-	private String subcategory;
-	
+	private IntegerProperty productID;
+	private StringProperty upc;
+	private StringProperty productName;
+	private IntegerProperty quantity;
+	private DoubleProperty price;
+	private StringProperty manufacturer;
+	private StringProperty subcategory;
+
 	// default constructor
 	public Product() {
 	}
-	
+
 	/*
 	 * constructor with productId
 	 */
-	public Product(int productId, String upc, String productName, int quantity, BigDecimal price, String manufacturer, String subcategory) {
+	public Product(int productId, String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
 		try {
-			if (productId >= 0 && quantity >= 0 && price.compareTo(new BigDecimal(0)) >= 0) {
-				this.productId = productId;
-				this.upc = upc;
-				this.productName = productName;
-				this.quantity = quantity;
-				this.price = price;
-				this.manufacturer = manufacturer;
-				this.subcategory = subcategory;
+			if (productId >= 0 && quantity >= 0 && price >= 0) {
+				this.productID = new SimpleIntegerProperty(productId);
+				this.upc = new SimpleStringProperty(upc);
+				this.productName = new SimpleStringProperty(productName);
+				this.quantity = new SimpleIntegerProperty(quantity);
+				this.price = new SimpleDoubleProperty(price);
+				this.manufacturer = new SimpleStringProperty(manufacturer);
+				this.subcategory = new SimpleStringProperty(subcategory);
 			}
 			else {
 				throw new ArithmeticException("Failed to create new instance of Product. productId, quantity, or price is a negative value");
 			}
 		}catch (ArithmeticException e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
-	
+
 	/*
 	 * constructor with no productId
 	 */
-	public Product(String upc, String productName, int quantity, BigDecimal price, String manufacturer, String subcategory) {
-		this.upc = upc;
-		this.productName = productName;
-		this.quantity = quantity;  //FIXME: make sure quantity is positive integer
-		this.price = price;
-		this.manufacturer = manufacturer;
-		this.subcategory = subcategory;
-	}
-	
-	
-	public int GetProductId() {
-		return this.productId;
-	}
-
-	public String GetUpc() {
-		return this.upc;
-	}
-	
-	public String GetProductName() {
-		return this.productName;
-	}
-	
-	public int GetQuantity() {
-		return this.quantity;
-	}
-	
-	public BigDecimal GetPrice() {
-		return this.price;
+	public Product(String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
+		try {
+			if (quantity >= 0 && price >= 0) {
+				this.upc = new SimpleStringProperty(upc);
+				this.productName = new SimpleStringProperty(productName);
+				this.quantity = new SimpleIntegerProperty(quantity);
+				this.price = new SimpleDoubleProperty(price);
+				this.manufacturer = new SimpleStringProperty(manufacturer);
+				this.subcategory = new SimpleStringProperty(subcategory);
+			}
+			else {
+				throw new ArithmeticException("Failed to create new instance of Product. productId, quantity, or price is a negative value");
+			}
+		}catch (ArithmeticException e) {
+			e.printStackTrace();
 		}
-
-	public String GetManufacturer() {
-		return this.manufacturer;
 	}
 
-	public String GetSubcategory () { return this.subcategory; }
-	
-	public void SetProductId(int productId) {
-		this.productId = productId;
+
+	public int getProductID() { return productID.get(); }
+
+	public String getUpc() { return upc.get(); }
+
+	public String getProductName() { return productName.get(); }
+
+	public int getQuantity() { return quantity.get(); }
+
+	public double getPrice() { return price.get(); }
+
+	public String getManufacturer() { return manufacturer.get(); }
+
+	public String getSubcategory() { return subcategory.get(); }
+
+	public void setProductID(int productID) {
+		this.productID.set(productID);
 	}
-	
-	public void SetProductName(String productName) {
-		this.productName = productName;
+
+	public void setUpc(String upc) { this.upc.set(upc);	}
+
+	public void setProductName(String productName) {
+		this.productName.set(productName);
 	}
-	
-	public void SetQuantity(int quantity) {
-		this.quantity = quantity;
+
+	public void setQuantity(int quantity) {
+		this.quantity.set(quantity);
 	}
-	
-	public void SetPrice(BigDecimal price) {
-		this.price = price;
+
+	public void setPrice(double price) {
+		this.price.set(price);
 	}
-	
-	
-	@Override
-	/**
-	 * Get String representation
-	 */
-	public String toString() {
-		return String.format("%-12d %-30s %-30s %10d %20.2f %30s %40s", productId, upc, productName, quantity, price, manufacturer, subcategory);
-		
-	}
+
 }

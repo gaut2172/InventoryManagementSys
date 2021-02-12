@@ -60,7 +60,7 @@ public class ProductsViewController implements Initializable {
 
     //FIXME: change this to BigDecimal, not double
     @FXML
-    private TableColumn<Product, BigDecimal> retailPriceColumn;
+    private TableColumn<Product, Double> retailPriceColumn;
 
     // FIXME: change DBController to handle manufacturer and category
     @FXML
@@ -87,7 +87,7 @@ public class ProductsViewController implements Initializable {
 
         try {
             // UPC column
-            upcColumn = new TableColumn<>("UPC");
+            upcColumn = new TableColumn<Product, String>("UPC");
             upcColumn.setMinWidth(200);
             upcColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("upc"));
 
@@ -95,42 +95,33 @@ public class ProductsViewController implements Initializable {
             // product name column
             productNameColumn = new TableColumn<>("Product Name");
             productNameColumn.setMinWidth(200);
-            productNameColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("productName"));
+//            productNameColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("productName"));
 
             // in stock quantity column
             inStockColumn = new TableColumn<>("Stock Quantity");
             inStockColumn.setMinWidth(100);
-            inStockColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("quantity"));
+//            inStockColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("quantity"));
 
             // retail price column
             retailPriceColumn = new TableColumn<>("Retail Price");
             retailPriceColumn.setMinWidth(150);
-            retailPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, BigDecimal>("price"));
+//            retailPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
 
             // manufacturer column
             manufacturerColumn = new TableColumn<>("Manufacturer");
             manufacturerColumn.setMinWidth(200);
-            manufacturerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("manufacturer"));
+//            manufacturerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("manufacturer"));
 
             // subcategory column
             subCategoryColumn = new TableColumn<>("Subcategory");
             subCategoryColumn.setMinWidth(200);
-            subCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("subcategory"));
+//            subCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("subcategory"));
 
-            // load the data from an observableList
+            // load the data from database into an observableList
             ArrayList<Product> arrayList = handler.getAllProducts();
-            for (int i = 0; i < arrayList.size(); i++) {
-                System.out.println(arrayList.get(i));
-            }
-            System.out.println("\n");
-
             productsList = FXCollections.observableArrayList(arrayList);
-            for (int i = 0; i < productsList.size(); i++) {
-                System.out.println(productsList.get(i));
-            }
+            // add the items to the JavaFX table
             productsTable.setItems(productsList);
-
-
 
         } catch (Exception e) {
             e.printStackTrace();

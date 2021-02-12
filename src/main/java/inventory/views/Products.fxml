@@ -10,6 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <AnchorPane prefHeight="900.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="inventory.controllers.ProductsViewController">
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="900.0" prefWidth="246.0" style="-fx-background-color: #FBF5E6;" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -113,12 +114,36 @@
             </Label>
             <TableView fx:id="productsTable" layoutX="74.0" layoutY="142.0" prefHeight="722.0" prefWidth="942.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0">
               <columns>
-                 <TableColumn fx:id="upcColumn" prefWidth="105.0" text="UPC" />
-                 <TableColumn fx:id="productNameColumn" prefWidth="229.0" text="Product Name" />
-                 <TableColumn fx:id="retailPriceColumn" prefWidth="104.0" text="Retail Price" />
-                 <TableColumn fx:id="inStockColumn" prefWidth="107.0" text="Quantity in Stock" />
-                 <TableColumn fx:id="manufacturerColumn" prefWidth="201.0" text="Manufacturer" />
-                 <TableColumn fx:id="subCategoryColumn" prefWidth="207.0" text="Category" />
+                 <TableColumn fx:id="upcColumn" prefWidth="105.0" text="UPC">
+                    <cellValueFactory>
+                       <PropertyValueFactory property="upc" />
+                    </cellValueFactory>
+                 </TableColumn>
+                 <TableColumn fx:id="productNameColumn" prefWidth="229.0" text="Product Name">
+                    <cellValueFactory>
+                       <PropertyValueFactory property="productName" />
+                    </cellValueFactory>
+                 </TableColumn>
+                 <TableColumn fx:id="retailPriceColumn" prefWidth="104.0" text="Retail Price">
+                    <cellValueFactory>
+                       <PropertyValueFactory property="price" />
+                    </cellValueFactory>
+                 </TableColumn>
+                 <TableColumn fx:id="inStockColumn" prefWidth="107.0" text="Quantity in Stock" >
+                    <cellValueFactory>
+                       <PropertyValueFactory property="quantity" />
+                    </cellValueFactory>
+                 </TableColumn>
+                 <TableColumn fx:id="manufacturerColumn" prefWidth="201.0" text="Manufacturer" >
+                    <cellValueFactory>
+                       <PropertyValueFactory property="manufacturer" />
+                    </cellValueFactory>
+                 </TableColumn>
+                 <TableColumn fx:id="subCategoryColumn" prefWidth="207.0" text="Category" >
+                    <cellValueFactory>
+                       <PropertyValueFactory property="subcategory" />
+                    </cellValueFactory>
+                 </TableColumn>
               </columns>
             </TableView>
          </children>
