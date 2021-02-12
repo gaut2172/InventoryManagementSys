@@ -30,7 +30,7 @@
       </Label>
       <ImageView fx:id="image1" fitHeight="191.0" fitWidth="175.0" layoutX="113.0" layoutY="120.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../resources/images/inventoryManagement_logo.png" />
+            <Image url="@../../../resources/gui_images/inventoryManagement_logo.png" />
          </image>
       </ImageView>
       <Label fx:id="title" alignment="CENTER" layoutX="76.0" layoutY="47.0" text="Inventory System" textFill="#d30d0d">

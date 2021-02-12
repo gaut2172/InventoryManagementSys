@@ -75,6 +75,8 @@ public class ProductsViewController implements Initializable {
     @FXML
     private TableView<Product> productsTable;
 
+    private ObservableList<Product> productsList = FXCollections.observableArrayList();
+
     private DBHandler handler = new DBHandler();
 
     @Override
@@ -83,7 +85,6 @@ public class ProductsViewController implements Initializable {
     }
 
     public void updateTable() {
-        ObservableList<Product> productsList = null;
 
         try {
             // UPC column
@@ -95,31 +96,27 @@ public class ProductsViewController implements Initializable {
             // product name column
             productNameColumn = new TableColumn<>("Product Name");
             productNameColumn.setMinWidth(200);
-//            productNameColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("productName"));
 
             // in stock quantity column
             inStockColumn = new TableColumn<>("Stock Quantity");
             inStockColumn.setMinWidth(100);
-//            inStockColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("quantity"));
 
             // retail price column
             retailPriceColumn = new TableColumn<>("Retail Price");
             retailPriceColumn.setMinWidth(150);
-//            retailPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
 
             // manufacturer column
             manufacturerColumn = new TableColumn<>("Manufacturer");
             manufacturerColumn.setMinWidth(200);
-//            manufacturerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("manufacturer"));
 
             // subcategory column
             subCategoryColumn = new TableColumn<>("Subcategory");
             subCategoryColumn.setMinWidth(200);
-//            subCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("subcategory"));
 
             // load the data from database into an observableList
             ArrayList<Product> arrayList = handler.getAllProducts();
             productsList = FXCollections.observableArrayList(arrayList);
+
             // add the items to the JavaFX table
             productsTable.setItems(productsList);
 
