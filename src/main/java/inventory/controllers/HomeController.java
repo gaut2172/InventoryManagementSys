@@ -59,8 +59,8 @@ public class HomeController {
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(url);
-            Parent loginViewParent = loader.load();
-            Scene homeScene = new Scene(loginViewParent);
+            Parent ProductsViewParent = loader.load();
+            Scene homeScene = new Scene(ProductsViewParent);
 
             // access the controller of Products view to use controller to pass in user to initData()
             ProductsViewController controller = loader.getController();

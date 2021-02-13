@@ -173,44 +173,65 @@ public class ProductsViewController implements Initializable {
             boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
 
             if (allowed) {
-
+                // get string versions of the input
                 String upc = upcTextField.getText();
                 String productName = productNameTextField.getText();
                 String priceString = priceTextField.getText();
-//            double price = Double.parseDouble(priceTextField.getText());
                 String quantityString = quantityTextField.getText();
-//            int quantity = Integer.parseInt(quantityTextField.getText());
                 String manufacturer = manufacturerTextField.getText();
                 String category = categoryTextField.getText();
 
-//            ArrayList<String> allFields = new ArrayList<>();
-//            allFields.add(upc);
-//            allFields.add(productName);
-//            allFields.add(priceString);
-//            allFields.add(quantityString);
-//            allFields.add(manufacturer);
-//            allFields.add(category);
-
-//            for (int i = 0; i < allFields.size(); i++) {
-//                System.out.println(allFields.get(i));
-//            }
-                if (ParseNumbers.isParsableInt(quantityString) && ParseNumbers.isParsableDouble(priceString)) {
-                    int quantity = Integer.parseInt(quantityString);
-                    double price = Double.parseDouble(priceString);
-                    Product newProduct = new Product(upc, productName, quantity, price, manufacturer, category);
-
-                    System.out.println(newProduct.getUpc() + " " + newProduct.getProductName() +
-                            " " + newProduct.getQuantity() + " " + newProduct.getPrice());
-
-
-
-                    buttonStatus.setText("Product successfully added");
-                    buttonStatus.setTextFill(Paint.valueOf("green"));
+                // make sure UPC entered is not already taken
+                boolean upcFoundMatch = false;
+                for (int i = 0; i < productsList.size(); i++) {
+                    if (productsList.get(i).getUpc().equals(upc)) {
+                        upcFoundMatch = true;
+                        break;
+                    }
                 }
-                else {
-                    buttonStatus.setText("*Make sure price and quantity are in number format*");
+                // if UPC already taken, notify user
+                if (upcFoundMatch) {
+                    buttonStatus.setText("*UPC entered is already being used in database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                 }
+                // else UPC is not taken
+                else {
+                    // if user input for quantity and price can be parsed to int and double, parse them, else notify user
+                    if (ParseNumbers.isParsableInt(quantityString) && ParseNumbers.isParsableDouble(priceString)) {
+                        int quantity = Integer.parseInt(quantityString);
+                        double price = Double.parseDouble(priceString);
+                        Product newProduct = new Product(upc, productName, quantity, price, manufacturer, category);
+
+                        System.out.println(newProduct.getUpc() + " " + newProduct.getProductName() +
+                                " " + newProduct.getQuantity() + " " + newProduct.getPrice());
+
+                        URL url = Paths.get("./src/main/java/inventory/views/AddProduct.fxml").toUri().toURL();
+
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(url);
+                        Parent productsViewParent = loader.load();
+                        Scene homeScene = new Scene(productsViewParent);
+
+                        // access the controller of AddProduct view to pass in user and newProduct to initData()
+                        AddProductController controller = loader.getController();
+                        controller.initData(currentUser, newProduct);
+
+                        // get stage info
+                        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+                        window.setScene(homeScene);
+                        window.show();
+
+                        buttonStatus.setText("Product successfully added");
+                        buttonStatus.setTextFill(Paint.valueOf("green"));
+                    }
+                    else {
+                        buttonStatus.setText("*Make sure price and quantity are in number format*");
+                        buttonStatus.setTextFill(Paint.valueOf("red"));
+                    }
+                }
+
+
 
 
 
