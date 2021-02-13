@@ -59,6 +59,13 @@ public class Product {
 		}
 	}
 
+	public Product(String upc, String productName, int quantity, double price) {
+		this.upc = new SimpleStringProperty(upc);
+		this.productName = new SimpleStringProperty(productName);
+		this.quantity = new SimpleIntegerProperty(quantity);
+		this.price = new SimpleDoubleProperty(price);
+	}
+
 
 	public int getProductID() { return productID.get(); }
 

@@ -1,7 +1,10 @@
 package inventory.controllers;
 
 import inventory.models.Product;
+import inventory.models.User;
+import inventory.services.Authorizer;
 import inventory.services.DBHandler;
+import inventory.services.ParseNumbers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,18 +14,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -32,19 +32,34 @@ public class ProductsViewController implements Initializable {
     private Button transactionsButton;
 
     @FXML
-    private Button productsButton;
+    private Button findProductButton;
 
     @FXML
-    private Button manufacturersButton;
+    private TableColumn<?, ?> subCategoryColumn;
+
+    @FXML
+    private TextField productNameTextField;
+
+    @FXML
+    private TableColumn<?, ?> upcColumn;
 
     @FXML
     private Label usernameDisplay;
 
     @FXML
+    private TableView<Product> productsTable;
+
+    @FXML
     private Label title;
 
     @FXML
-    private Button categoriesButton;
+    private Label buttonStatus;
+
+    @FXML
+    private TextField categoryTextField;
+
+    @FXML
+    private Button deleteProductButton;
 
     @FXML
     private Button homeButton;
@@ -53,35 +68,59 @@ public class ProductsViewController implements Initializable {
     private Button signOutButton;
 
     @FXML
-    private TableColumn<Product, String> productNameColumn;
+    private TableColumn<?, ?> manufacturerColumn;
 
     @FXML
-    private TableColumn<Product, Integer> inStockColumn;
-
-    //FIXME: change this to BigDecimal, not double
-    @FXML
-    private TableColumn<Product, Double> retailPriceColumn;
-
-    // FIXME: change DBController to handle manufacturer and category
-    @FXML
-    private TableColumn<Product, String> manufacturerColumn;
+    private Button productsButton;
 
     @FXML
-    private TableColumn<Product, String> subCategoryColumn;
+    private Button manufacturersButton;
 
     @FXML
-    private TableColumn<Product, String> upcColumn;
+    private TableColumn<?, ?> productNameColumn;
 
     @FXML
-    private TableView<Product> productsTable;
+    private TableColumn<?, ?> inStockColumn;
+
+    @FXML
+    private TextField priceTextField;
+
+    @FXML
+    private Button addProductButton;
+
+    @FXML
+    private TableColumn<?, ?> retailPriceColumn;
+
+    @FXML
+    private Button categoriesButton;
+
+    @FXML
+    private TextField upcTextField;
+
+    @FXML
+    private TextField quantityTextField;
+
+    @FXML
+    private TextField manufacturerTextField;
+
+    private User currentUser;
 
     private ObservableList<Product> productsList = FXCollections.observableArrayList();
 
     private DBHandler handler = new DBHandler();
 
+    private Authorizer authorizer = new Authorizer();
+
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         updateTable();
+    }
+
+
+    public void initData(User user) {
+        currentUser = user;
+
+        usernameDisplay.setText("User: " + currentUser.GetUsername());
     }
 
     public void updateTable() {
@@ -90,7 +129,6 @@ public class ProductsViewController implements Initializable {
             // UPC column
             upcColumn = new TableColumn<Product, String>("UPC");
             upcColumn.setMinWidth(200);
-            upcColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("upc"));
 
 
             // product name column
@@ -125,6 +163,81 @@ public class ProductsViewController implements Initializable {
         }
     }
 
+    /**
+     * Filter table user input
+     * @param event
+     */
+    public void addButtonClicked(ActionEvent event) {
+        try {
+            final String ACTION = "create";
+            boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
+
+            if (allowed) {
+
+                String upc = upcTextField.getText();
+                String productName = productNameTextField.getText();
+                String priceString = priceTextField.getText();
+//            double price = Double.parseDouble(priceTextField.getText());
+                String quantityString = quantityTextField.getText();
+//            int quantity = Integer.parseInt(quantityTextField.getText());
+                String manufacturer = manufacturerTextField.getText();
+                String category = categoryTextField.getText();
+
+//            ArrayList<String> allFields = new ArrayList<>();
+//            allFields.add(upc);
+//            allFields.add(productName);
+//            allFields.add(priceString);
+//            allFields.add(quantityString);
+//            allFields.add(manufacturer);
+//            allFields.add(category);
+
+//            for (int i = 0; i < allFields.size(); i++) {
+//                System.out.println(allFields.get(i));
+//            }
+                if (ParseNumbers.isParsableInt(quantityString) && ParseNumbers.isParsableDouble(priceString)) {
+                    int quantity = Integer.parseInt(quantityString);
+                    double price = Double.parseDouble(priceString);
+                    Product newProduct = new Product(upc, productName, quantity, price, manufacturer, category);
+
+                    System.out.println(newProduct.getUpc() + " " + newProduct.getProductName() +
+                            " " + newProduct.getQuantity() + " " + newProduct.getPrice());
+
+
+
+                    buttonStatus.setText("Product successfully added");
+                    buttonStatus.setTextFill(Paint.valueOf("green"));
+                }
+                else {
+                    buttonStatus.setText("*Make sure price and quantity are in number format*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                }
+
+
+
+
+
+            }
+            else {
+                buttonStatus.setText("You are not authorized for this action");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
+            }
+
+
+            /*
+            add product:
+            1 - XXXX enter upc, name, price, and stock, manufacturer, category
+            2 - query manufacturer and subcategory tables for a match
+            3 - window pops up, prints user input for confirmation
+            4 - print success, or say try again
+            5 - pop up window closes and products table updates
+             */
+
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * Change scene to home scene
@@ -134,8 +247,15 @@ public class ProductsViewController implements Initializable {
 
         try {
             URL url = Paths.get("./src/main/java/inventory/views/Home.fxml").toUri().toURL();
-            Parent loginViewParent = FXMLLoader.load(url);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent loginViewParent = loader.load();
             Scene homeScene = new Scene(loginViewParent);
+
+            // access the controller of Products view to use controller to pass in user to initData()
+            HomeController controller = loader.getController();
+            controller.initData(currentUser);
 
             // get stage info
             Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();

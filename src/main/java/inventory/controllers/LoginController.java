@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -31,19 +32,21 @@ public class LoginController {
 
     private MiddleLogin authenticator = new MiddleLogin();
 
+    private User currentUser = null;
+
     public void Login(ActionEvent event) {
         try {
-            User user = null;
             String username = textField_username.getText();
             String pwd = passwordField.getText();
-            user = authenticator.authenticate(username, pwd);
+            currentUser = authenticator.authenticate(username, pwd);
 
-            if (user != null) {
+            if (currentUser != null) {
                 status.setText("Login Successful");
                 // change to home scene
                 changeScreenDuringLogin(event);
             } else {
                 status.setText("Please try again.");
+                status.setTextFill(Paint.valueOf("red"));
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -64,8 +67,16 @@ public class LoginController {
 
         try {
             URL url = Paths.get("./src/main/java/inventory/views/Home.fxml").toUri().toURL();
-            Parent loginViewParent = FXMLLoader.load(url);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent loginViewParent = loader.load();
             Scene homeScene = new Scene(loginViewParent);
+
+            // access the controller of Home view to use controller to pass in user to initData()
+            HomeController controller = loader.getController();
+            controller.initData(currentUser);
+
 
             // get stage info
             Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
