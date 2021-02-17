@@ -373,5 +373,62 @@ public class DBHandler {
 		return customerArrayList;
 	}
 
+	public ArrayList<String> getAllSubcategories() {
+		ArrayList<String> subcategoryList = new ArrayList<>();
 
+		String currCategory = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_subcategories_1";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet
+			while (results.next()) {
+				currCategory = results.getString(1);
+
+				subcategoryList.add(currCategory);
+			}
+
+			DBConnection.disconnect(conn);
+
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return subcategoryList;
+	}
+
+	public ArrayList<String> getAllManufacturers() {
+		ArrayList<String> manufacturers = new ArrayList<>();
+
+		String currManufacturer = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_manufacturers_1";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet
+			while (results.next()) {
+				currManufacturer = results.getString(1);
+
+				manufacturers.add(currManufacturer);
+			}
+			DBConnection.disconnect(conn);
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return manufacturers;
+	}
 }

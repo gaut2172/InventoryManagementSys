@@ -23,12 +23,30 @@
             </VBox>
             <VBox prefHeight="326.0" prefWidth="321.0" spacing="10.0">
                <children>
-                  <Label fx:id="upcLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" />
-                  <Label fx:id="productNameLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" />
-                  <Label fx:id="quantityLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" />
-                  <Label fx:id="priceLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" />
-                  <Label fx:id="manufacturerLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" />
-                  <Label fx:id="categoryLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" />
+                  <Label fx:id="upcLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textFill="#c94c26">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font></Label>
+                  <Label fx:id="productNameLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" textFill="#c94c26">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font></Label>
+                  <Label fx:id="quantityLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" textFill="#c94c26">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font></Label>
+                  <Label fx:id="priceLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" textFill="#c94c26">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font></Label>
+                  <Label fx:id="manufacturerLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" textFill="#c94c26">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font></Label>
+                  <Label fx:id="categoryLabel" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="29.0" text="default" textAlignment="CENTER" textFill="#c94c26">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font></Label>
                </children>
                <padding>
                   <Insets right="10.0" />
@@ -48,8 +66,8 @@
             </ImageView>
          </children>
       </VBox>
-      <Button fx:id="noButton" layoutX="490.0" layoutY="422.0" mnemonicParsing="false" prefWidth="55.0" text="No" />
-      <Button fx:id="yesButton" layoutX="585.0" layoutY="422.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Yes" />
+      <Button fx:id="noButton" layoutX="490.0" layoutY="422.0" mnemonicParsing="false" onAction="#noButtonPressed" prefWidth="55.0" text="No" />
+      <Button fx:id="yesButton" layoutX="585.0" layoutY="422.0" mnemonicParsing="false" onAction="#yesButtonPressed" prefHeight="25.0" prefWidth="55.0" text="Yes" />
       <Label fx:id="messageLabel" layoutX="249.0" layoutY="33.0" prefHeight="72.0" prefWidth="454.0" text="Are you sure you want to add this new product to the database?" textFill="#c94c26" wrapText="true">
          <font>
             <Font name="System Bold" size="24.0" />

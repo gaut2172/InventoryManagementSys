@@ -16,13 +16,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.paint.Paint;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -164,14 +164,14 @@ public class ProductsViewController implements Initializable {
     }
 
     /**
-     * Filter table user input
-     * @param event
+     * Add button clicked, lets user add a new product to the database
      */
-    public void addButtonClicked(ActionEvent event) {
+    public void addButtonClicked() {
         try {
             final String ACTION = "create";
             boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
 
+            // if user is authorized for this action, let them do it, else return and notify user
             if (allowed) {
                 // get string versions of the input
                 String upc = upcTextField.getText();
@@ -182,66 +182,69 @@ public class ProductsViewController implements Initializable {
                 String category = categoryTextField.getText();
 
                 // make sure UPC entered is not already taken
-                boolean upcFoundMatch = false;
-                for (int i = 0; i < productsList.size(); i++) {
-                    if (productsList.get(i).getUpc().equals(upc)) {
-                        upcFoundMatch = true;
-                        break;
-                    }
-                }
+                boolean upcFoundMatch = checkUpc(upc);
+
                 // if UPC already taken, notify user
                 if (upcFoundMatch) {
                     buttonStatus.setText("*UPC entered is already being used in database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
-                }
-                // else UPC is not taken
-                else {
-                    // if user input for quantity and price can be parsed to int and double, parse them, else notify user
-                    if (ParseNumbers.isParsableInt(quantityString) && ParseNumbers.isParsableDouble(priceString)) {
-                        int quantity = Integer.parseInt(quantityString);
-                        double price = Double.parseDouble(priceString);
-                        Product newProduct = new Product(upc, productName, quantity, price, manufacturer, category);
-
-                        System.out.println(newProduct.getUpc() + " " + newProduct.getProductName() +
-                                " " + newProduct.getQuantity() + " " + newProduct.getPrice());
-
-                        URL url = Paths.get("./src/main/java/inventory/views/AddProduct.fxml").toUri().toURL();
-
-                        FXMLLoader loader = new FXMLLoader();
-                        loader.setLocation(url);
-                        Parent productsViewParent = loader.load();
-                        Scene homeScene = new Scene(productsViewParent);
-
-                        // access the controller of AddProduct view to pass in user and newProduct to initData()
-                        AddProductController controller = loader.getController();
-                        controller.initData(currentUser, newProduct);
-
-                        // get stage info
-                        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-
-                        window.setScene(homeScene);
-                        window.show();
-
-                        buttonStatus.setText("Product successfully added");
-                        buttonStatus.setTextFill(Paint.valueOf("green"));
-                    }
-                    else {
-                        buttonStatus.setText("*Make sure price and quantity are in number format*");
-                        buttonStatus.setTextFill(Paint.valueOf("red"));
-                    }
+                    return;
                 }
 
+                // if user input for quantity and price cannot be parsed to int and double, notify user
+                if (!ParseNumbers.isParsableInt(quantityString) || !ParseNumbers.isParsableDouble(priceString)) {
+                    buttonStatus.setText("*Make sure price and quantity are in number format*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
+                // if user input for manufacturer is not in database, notify user
+                if (!checkManufacturer(manufacturer)) {
+                    buttonStatus.setText("*Manufacturer name entered must already be in our database*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
+                // if user input for subcategory is not in database, notify user
+                if (!checkSubcategory(category)) {
+                    buttonStatus.setText("*Category name entered must already be in our database*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
+                // parse user input to int and double, then create new product instance from user input
+                int quantity = Integer.parseInt(quantityString);
+                double price = Double.parseDouble(priceString);
+                Product newProduct = new Product(upc, productName, quantity, price, manufacturer, category);
 
+                // show confirmation window for user to verify that they want to add the new product to the database
+                boolean confirmed = showPopup(currentUser, newProduct);
 
+                // if user says they don't want to add the product to the database, don't add it
+                if (!confirmed) {
+                    buttonStatus.setText("Product was not saved to the database");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
+                boolean added = handler.insertProduct(newProduct);
+
+                // if product was succesffully inserted into database, notify user
+                if (added) {
+                    buttonStatus.setText("Product successfully added");
+                    buttonStatus.setTextFill(Paint.valueOf("green"));
+                }
+
+                // update table so user can see new product
+                updateTable();
             }
-            else {
+            // else user is not authorized for adding a product
+            else{
                 buttonStatus.setText("You are not authorized for this action");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
             }
+
+
 
 
             /*
@@ -258,6 +261,35 @@ public class ProductsViewController implements Initializable {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean showPopup(User currentUser, Product newProduct) {
+        boolean confirmed = false;
+
+        try {
+            URL url = Paths.get("./src/main/java/inventory/views/AddProduct.fxml").toUri().toURL();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent productsViewParent = loader.load();
+            Scene addProductScene = new Scene(productsViewParent);
+
+            // access the controller of AddProduct view to pass in user and newProduct to initData()
+            AddProductController controller = loader.getController();
+            controller.initData(currentUser, newProduct);
+
+            // get stage info
+            Stage window = new Stage();
+            window.setScene(addProductScene);
+            window.initModality(Modality.APPLICATION_MODAL);
+            window.initOwner(addProductButton.getScene().getWindow());
+            window.showAndWait();
+            confirmed = controller.getResult();
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        return confirmed;
     }
 
     /**
@@ -293,4 +325,45 @@ public class ProductsViewController implements Initializable {
         }
     }
 
+    /**
+     * Check if manufacturer to add is a valid manufacturer name in the database
+     * @param userInput the manufacturer name to check
+     * @return true if it is in the database as a valid manufacturer name
+     */
+    public boolean checkManufacturer(String userInput) {
+        boolean isThere = false;
+        ArrayList<String> manufacturers = new ArrayList<>();
+
+        manufacturers = handler.getAllManufacturers();
+
+        if (manufacturers.contains(userInput)) {
+            isThere = true;
+        }
+        return isThere;
+    }
+
+    /**
+     * Check if subcategory to add is a valid subcategory name in the database
+     * @param userInput the subcategory name to check
+     * @return true if it is in the database as a valid subcategory name
+     */
+    public boolean checkSubcategory(String userInput) {
+        boolean isThere = false;
+        ArrayList<String> subcategories = new ArrayList<>();
+
+        subcategories = handler.getAllSubcategories();
+
+        if (subcategories.contains(userInput)) {
+            isThere = true;
+        }
+        return isThere;
+    }
+
+    public boolean checkUpc(String userInput) {
+        boolean isThere = false;
+        if (productsList.contains(userInput)) {
+            isThere = true;
+        }
+        return isThere;
+    }
 }
