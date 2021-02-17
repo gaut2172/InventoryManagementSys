@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import inventory.models.Manufacturer;
 import inventory.models.Product;
 import inventory.models.Customer;
 
@@ -26,14 +27,17 @@ public class DBHandler {
 		
 		try {
 			// parameterize SQL statement to stop SQL injections
-			String sql = "INSERT INTO product(ProductName, Quantity, Price) VALUES(?, ?, ?)";
+			String sql = "INSERT INTO product(upc, productName, quantity, retailPrice, manufacturer, subcategory) VALUES(?, ?, ?, ?, ?, ?)";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
 			// insert values into prepared statement
-			stmt.setString(1, myProduct.getProductName());
-			stmt.setInt(2,  myProduct.getQuantity());
-			stmt.setDouble(3, myProduct.getPrice());
+			stmt.setString(1, myProduct.getUpc());
+			stmt.setString(2, myProduct.getProductName());
+			stmt.setInt(3,  myProduct.getQuantity());
+			stmt.setDouble(4, myProduct.getPrice());
+			stmt.setInt(5, myProduct.getManufacturerInt());
+			stmt.setInt(6, myProduct.getSubcategoryInt());
 			
 			// execute SQL command
 			int inserted = stmt.executeUpdate();
@@ -404,10 +408,10 @@ public class DBHandler {
 		return subcategoryList;
 	}
 
-	public ArrayList<String> getAllManufacturers() {
-		ArrayList<String> manufacturers = new ArrayList<>();
+	public ArrayList<Manufacturer> getAllManufacturers() {
+		ArrayList<Manufacturer> manufacturers = new ArrayList<>();
 
-		String currManufacturer = null;
+		Manufacturer currManufacturer;
 
 		try {
 			// parameterize SQL statement to deter SQL injection attacks
@@ -420,7 +424,8 @@ public class DBHandler {
 
 			// iterate through ResultSet
 			while (results.next()) {
-				currManufacturer = results.getString(1);
+
+				currManufacturer = new Manufacturer(results.getInt(1), results.getString(2));
 
 				manufacturers.add(currManufacturer);
 			}

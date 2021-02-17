@@ -11,9 +11,34 @@ public class Product {
 	private DoubleProperty price;
 	private StringProperty manufacturer;
 	private StringProperty subcategory;
+	private IntegerProperty manufacturerInt;
+	private IntegerProperty subcategoryInt;
 
 	// default constructor
 	public Product() {
+	}
+
+	/*
+	 * constructor with int manufacturer and subcategory, no productId
+	 */
+	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory) {
+		try {
+			if (quantity >= 0 && price >= 0) {
+				this.upc = new SimpleStringProperty(upc);
+				this.productName = new SimpleStringProperty(productName);
+				this.quantity = new SimpleIntegerProperty(quantity);
+				this.price = new SimpleDoubleProperty(price);
+				this.manufacturerInt = new SimpleIntegerProperty(manufacturer);
+				this.subcategoryInt = new SimpleIntegerProperty(subcategory);
+			}
+			else {
+				throw new ArithmeticException("Failed to create new instance of Product. productId, quantity, or price is a negative value");
+			}
+		}catch (ArithmeticException e) {
+			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -81,6 +106,10 @@ public class Product {
 
 	public String getSubcategory() { return subcategory.get(); }
 
+	public int getSubcategoryInt() { return subcategoryInt.get(); }
+
+	public int getManufacturerInt() { return manufacturerInt.get(); }
+
 	public void setProductID(int productID) {
 		this.productID.set(productID);
 	}
@@ -99,4 +128,11 @@ public class Product {
 		this.price.set(price);
 	}
 
+	public void setManufacturerInt(int manufacturer) {
+		this.manufacturerInt.set(manufacturer);
+	}
+
+	public void setSubcategoryInt(int subcategory) {
+		this.subcategoryInt.set(subcategory);
+	}
 }

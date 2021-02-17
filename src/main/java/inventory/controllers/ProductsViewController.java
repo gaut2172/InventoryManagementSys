@@ -1,5 +1,6 @@
 package inventory.controllers;
 
+import inventory.models.Manufacturer;
 import inventory.models.Product;
 import inventory.models.User;
 import inventory.services.Authorizer;
@@ -199,13 +200,15 @@ public class ProductsViewController implements Initializable {
                 }
 
                 // if user input for manufacturer is not in database, notify user
-                if (!checkManufacturer(manufacturer)) {
+                if (assignManufacturerInt(manufacturer) == 0) {
                     buttonStatus.setText("*Manufacturer name entered must already be in our database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
 
-                // if user input for subcategory is not in database, notify user
+                // FIXME: checkSubcategory needs to be changed to assignSubcategoryInt()!!
+
+                //  if user input for subcategory is not in database, notify user
                 if (!checkSubcategory(category)) {
                     buttonStatus.setText("*Category name entered must already be in our database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
@@ -215,7 +218,8 @@ public class ProductsViewController implements Initializable {
                 // parse user input to int and double, then create new product instance from user input
                 int quantity = Integer.parseInt(quantityString);
                 double price = Double.parseDouble(priceString);
-                Product newProduct = new Product(upc, productName, quantity, price, manufacturer, category);
+
+                Product newProduct = new Product(upc, productName, quantity, price, manufacturerInt, subcategoryInt);
 
                 // show confirmation window for user to verify that they want to add the new product to the database
                 boolean confirmed = showPopup(currentUser, newProduct);
@@ -330,16 +334,17 @@ public class ProductsViewController implements Initializable {
      * @param userInput the manufacturer name to check
      * @return true if it is in the database as a valid manufacturer name
      */
-    public boolean checkManufacturer(String userInput) {
-        boolean isThere = false;
-        ArrayList<String> manufacturers = new ArrayList<>();
+    public int checkManufacturer(String userInput) {
+        int manufacturerId = 0;
+        ArrayList<Manufacturer> manufacturers = handler.getAllManufacturers();
 
-        manufacturers = handler.getAllManufacturers();
-
-        if (manufacturers.contains(userInput)) {
-            isThere = true;
+        for (int i = 0; i < manufacturers.size(); i++) {
+            Manufacturer currManufacturer = manufacturers.get(i);
+            if (currManufacturer.getManufacturerName().equals(userInput)) {
+                manufacturerId = currManufacturer.getManufacturerId();
+            }
         }
-        return isThere;
+        return manufacturerId;
     }
 
     /**
@@ -366,4 +371,12 @@ public class ProductsViewController implements Initializable {
         }
         return isThere;
     }
+
+    public int assignManufacturerInt(String manufacturer) {
+        int manufacturerId = 0;
+
+    }
+
+    int manufacturerInt = assignManufacturerInt(manufacturer);
+    int subcategoryInt = assignSubcategoryInt(category);
 }
