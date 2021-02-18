@@ -6,11 +6,8 @@ import inventory.services.DBHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
-import java.util.Optional;
 
 public class AddProductController {
 
@@ -46,24 +43,34 @@ public class AddProductController {
 
         private User currentUser;
 
-        private Product productToAdd;
+        private Product theProduct;
 
         private boolean yesOrNo;
 
+        String addOrDelete;
+
         private DBHandler dbHandler = new DBHandler();
 
-        public void initData(User user, Product product) {
+        public void initData(User user, Product product, String addOrDeleteInput) {
                 currentUser = user;
-                productToAdd = product;
+                theProduct = product;
                 usernameDisplay.setText("User: " + currentUser.GetUsername());
                 yesOrNo = false;
+                addOrDelete = addOrDeleteInput;
 
-                upcLabel.setText(productToAdd.getUpc());
-                productNameLabel.setText(productToAdd.getProductName());
-                quantityLabel.setText(Integer.toString(productToAdd.getQuantity()));
-                priceLabel.setText("$ " + Double.toString(productToAdd.getPrice()));
-                manufacturerLabel.setText(Integer.toString(productToAdd.getManufacturerInt()));
-                categoryLabel.setText(Integer.toString(productToAdd.getSubcategoryInt()));
+                upcLabel.setText(theProduct.getUpc());
+                productNameLabel.setText(theProduct.getProductName());
+                quantityLabel.setText(Integer.toString(theProduct.getQuantity()));
+                priceLabel.setText("$ " + Double.toString(theProduct.getPrice()));
+                manufacturerLabel.setText(Integer.toString(theProduct.getManufacturerInt()));
+                categoryLabel.setText(Integer.toString(theProduct.getSubcategoryInt()));
+
+                if (addOrDelete.equals("add")) {
+                        messageLabel.setText("Are you sure you want to add this new product to the database?");
+                }
+                else if (addOrDeleteInput.equals("delete")) {
+                        messageLabel.setText("Are you sure you want to delete this product from the database?");
+                }
         }
 
         public boolean getResult() {
