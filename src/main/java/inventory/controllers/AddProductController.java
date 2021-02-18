@@ -62,8 +62,8 @@ public class AddProductController {
                 productNameLabel.setText(productToAdd.getProductName());
                 quantityLabel.setText(Integer.toString(productToAdd.getQuantity()));
                 priceLabel.setText("$ " + Double.toString(productToAdd.getPrice()));
-                manufacturerLabel.setText(productToAdd.getManufacturer());
-                categoryLabel.setText(productToAdd.getSubcategory());
+                manufacturerLabel.setText(Integer.toString(productToAdd.getManufacturerInt()));
+                categoryLabel.setText(Integer.toString(productToAdd.getSubcategoryInt()));
         }
 
         public boolean getResult() {

@@ -2,6 +2,7 @@ package inventory.controllers;
 
 import inventory.models.Manufacturer;
 import inventory.models.Product;
+import inventory.models.Subcategory;
 import inventory.models.User;
 import inventory.services.Authorizer;
 import inventory.services.DBHandler;
@@ -199,17 +200,21 @@ public class ProductsViewController implements Initializable {
                     return;
                 }
 
+                // find corresponding manufacturer ID for the name input if exists
+                int manufacturerInt = assignManufacturerInt(manufacturer);
+
                 // if user input for manufacturer is not in database, notify user
-                if (assignManufacturerInt(manufacturer) == 0) {
+                if (manufacturerInt == 0) {
                     buttonStatus.setText("*Manufacturer name entered must already be in our database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
 
-                // FIXME: checkSubcategory needs to be changed to assignSubcategoryInt()!!
+                // find corresponding subcategory ID for the name input if exists
+                int subcategoryInt = assignSubcategoryInt(category);
 
                 //  if user input for subcategory is not in database, notify user
-                if (!checkSubcategory(category)) {
+                if (subcategoryInt == 0) {
                     buttonStatus.setText("*Category name entered must already be in our database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
@@ -220,6 +225,8 @@ public class ProductsViewController implements Initializable {
                 double price = Double.parseDouble(priceString);
 
                 Product newProduct = new Product(upc, productName, quantity, price, manufacturerInt, subcategoryInt);
+
+                System.out.println(newProduct.getManufacturerInt() + " / " + newProduct.getSubcategoryInt());
 
                 // show confirmation window for user to verify that they want to add the new product to the database
                 boolean confirmed = showPopup(currentUser, newProduct);
@@ -334,7 +341,7 @@ public class ProductsViewController implements Initializable {
      * @param userInput the manufacturer name to check
      * @return true if it is in the database as a valid manufacturer name
      */
-    public int checkManufacturer(String userInput) {
+    public int assignManufacturerInt(String userInput) {
         int manufacturerId = 0;
         ArrayList<Manufacturer> manufacturers = handler.getAllManufacturers();
 
@@ -352,16 +359,17 @@ public class ProductsViewController implements Initializable {
      * @param userInput the subcategory name to check
      * @return true if it is in the database as a valid subcategory name
      */
-    public boolean checkSubcategory(String userInput) {
-        boolean isThere = false;
-        ArrayList<String> subcategories = new ArrayList<>();
+    public int assignSubcategoryInt(String userInput) {
+        int subcategoryId = 0;
+        ArrayList<Subcategory> subcategories = handler.getAllSubcategories();
 
-        subcategories = handler.getAllSubcategories();
-
-        if (subcategories.contains(userInput)) {
-            isThere = true;
+        for (int i = 0; i < subcategories.size(); i++) {
+            Subcategory currSubcategory = subcategories.get(i);
+            if (currSubcategory.getSubcategoryName().equals(userInput)) {
+                subcategoryId = currSubcategory.getSubcategoryId();
+            }
         }
-        return isThere;
+        return subcategoryId;
     }
 
     public boolean checkUpc(String userInput) {
@@ -371,12 +379,4 @@ public class ProductsViewController implements Initializable {
         }
         return isThere;
     }
-
-    public int assignManufacturerInt(String manufacturer) {
-        int manufacturerId = 0;
-
-    }
-
-    int manufacturerInt = assignManufacturerInt(manufacturer);
-    int subcategoryInt = assignSubcategoryInt(category);
 }
