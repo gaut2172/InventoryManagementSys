@@ -57,23 +57,18 @@ public class DBHandler {
 	}
 	
 	
-	/**
-	 * Delete product by productId
-	 * @param productId
-	 * @return true if successful
-	 */
-	public boolean deleteProduct(int productId) {
+	public boolean deleteProduct(String upc) {
 		
 		boolean result = false;
 		
 		try {
 			// parameterize SQL statement to stop SQL injections
-			String sql = "DELETE FROM product WHERE ProductId = ?";
+			String sql = "DELETE FROM product WHERE upc = ?";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
 			// insert values into prepared statement
-			stmt.setInt(1, productId);
+			stmt.setString(1, upc);
 			
 			// execute SQL command
 			int deleted = stmt.executeUpdate();
@@ -128,32 +123,74 @@ public class DBHandler {
 		return result;
 	}
 	
-	/**
-	 * Retrieve Product from database by productId
-	 * @param productId
-	 */
-	public Product getProduct(int productId) {
+
+	public Product getProductByUpcAndName(String upc, String productName) {
 		
 		Product foundProduct = null;
+		Manufacturer foundManufacturer = null;
+		Subcategory foundSubcategory = null;
 		
 		try {
 			// parameterize SQL statement to deter SQL injection attacks
-			String sql = "SELECT * FROM view_products_1 WHERE ProductId = ?";
+			String sql = "SELECT * FROM view_products_1 WHERE upc = ? OR productName = ?";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
-			// insert values into prepared statment
-			stmt.setInt(1, productId);
+			// insert values into prepared statement
+			stmt.setString(1, upc);
+			stmt.setString(2, productName);
 			
 			// execute SQL command and record results
-			ResultSet results = stmt.executeQuery();
+			ResultSet results1 = stmt.executeQuery();
 			
 			// FIXME: check to see if the ResultSet has more than one result (potential bug)
-			while (results.next()) {
-				foundProduct = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
-						results.getDouble(5), results.getString(6), results.getString(7));
+			while (results1.next()) {
+				System.out.println("FOUND PRODUCT");
+				foundProduct = new Product(results1.getString(2), results1.getString(3), results1.getInt(4),
+						results1.getDouble(5), results1.getString(6), results1.getString(7));
 			}
-			
+
+			if (foundProduct == null) {
+				return foundProduct;
+			}
+
+			// parameterize SQL statement to deter SQL injection attacks
+			sql = "SELECT * FROM view_manufacturers_1 WHERE manufacturerName = ?";
+			stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setString(1, foundProduct.getManufacturer());
+
+			// execute SQL command and record results
+			ResultSet results2 = stmt.executeQuery();
+
+			while (results2.next()) {
+				foundManufacturer = new Manufacturer(results2.getInt(1), results2.getString(2));
+			}
+
+			if (foundManufacturer != null) {
+				System.out.println(foundManufacturer.getManufacturerId());
+				foundProduct.setManufacturerInt(foundManufacturer.getManufacturerId());
+			}
+
+			// parameterize SQL statement to deter SQL injection attacks
+			sql = "SELECT * FROM view_subcategories_1 WHERE subcategoryName = ?";
+			stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setString(1, foundProduct.getSubcategory());
+
+			// execute SQL command and record results
+			ResultSet results3 = stmt.executeQuery();
+
+			while (results3.next()) {
+				foundSubcategory = new Subcategory(results3.getInt(1), results3.getString(2));
+			}
+
+			if (foundSubcategory != null) {
+				foundProduct.setSubcategoryInt(foundSubcategory.getSubcategoryId());
+			}
+
 			DBConnection.disconnect(conn);
 			
 		} catch (Exception e) {
@@ -183,7 +220,7 @@ public class DBHandler {
 			
 			// iterate through ResultSet
 			while (results.next()) {
-				product = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
+				product = new Product(results.getString(2), results.getString(3), results.getInt(4),
 						results.getDouble(5), results.getString(6), results.getString(7));
 
 				productsList.add(product);

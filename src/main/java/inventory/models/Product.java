@@ -11,8 +11,8 @@ public class Product {
 	private DoubleProperty price;
 	private StringProperty manufacturer;
 	private StringProperty subcategory;
-	private IntegerProperty manufacturerInt;
-	private IntegerProperty subcategoryInt;
+	private IntegerProperty manufacturerInt = new SimpleIntegerProperty(0);
+	private IntegerProperty subcategoryInt = new SimpleIntegerProperty(0);
 
 	// default constructor
 	public Product() {
@@ -32,7 +32,7 @@ public class Product {
 				this.subcategoryInt = new SimpleIntegerProperty(subcategory);
 			}
 			else {
-				throw new ArithmeticException("Failed to create new instance of Product. productId, quantity, or price is a negative value");
+				throw new ArithmeticException("Failed to create new instance of Product. quantity or price is a negative value");
 			}
 		}catch (ArithmeticException e) {
 			e.printStackTrace();
@@ -43,28 +43,6 @@ public class Product {
 
 	/*
 	 * constructor with productId
-	 */
-	public Product(int productId, String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
-		try {
-			if (productId >= 0 && quantity >= 0 && price >= 0) {
-				this.productID = new SimpleIntegerProperty(productId);
-				this.upc = new SimpleStringProperty(upc);
-				this.productName = new SimpleStringProperty(productName);
-				this.quantity = new SimpleIntegerProperty(quantity);
-				this.price = new SimpleDoubleProperty(price);
-				this.manufacturer = new SimpleStringProperty(manufacturer);
-				this.subcategory = new SimpleStringProperty(subcategory);
-			}
-			else {
-				throw new ArithmeticException("Failed to create new instance of Product. productId, quantity, or price is a negative value");
-			}
-		}catch (ArithmeticException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * constructor with no productId
 	 */
 	public Product(String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
 		try {

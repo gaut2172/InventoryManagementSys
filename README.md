@@ -6,4 +6,4 @@ This is a personal project that I have been working on in my free time between s
 # Screenshots
 ![Login window:](src/main/resources/screenshots/Login_2-12-21.jpg)
 <br/><br/>
-![Products window:](src/main/resources/screenshots/Products_2-12-21.jpg)
+![Products window:](src/main/resources/screenshots/Products_2-18-21.jpg)

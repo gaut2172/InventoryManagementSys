@@ -81,6 +81,34 @@ public class HomeController {
         }
     }
 
+    public void signOutButtonPressed(ActionEvent event) {
+
+        try {
+            URL url = Paths.get("./src/main/java/inventory/views/Login.fxml").toUri().toURL();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent productViewParent = loader.load();
+            Scene loginScene = new Scene(productViewParent);
+
+            // access the controller of Products view to use controller to pass in user to initData()
+            LoginController controller = loader.getController();
+
+            // get stage info
+            Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+            window.setScene(loginScene);
+            window.show();
+
+        }catch (MalformedURLException e) {
+            e.printStackTrace();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 

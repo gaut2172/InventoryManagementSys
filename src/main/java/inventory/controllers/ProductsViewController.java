@@ -34,9 +34,6 @@ public class ProductsViewController implements Initializable {
     private Button transactionsButton;
 
     @FXML
-    private Button findProductButton;
-
-    @FXML
     private TableColumn<?, ?> subCategoryColumn;
 
     @FXML
@@ -61,7 +58,13 @@ public class ProductsViewController implements Initializable {
     private TextField categoryTextField;
 
     @FXML
-    private Button deleteProductButton;
+    private RadioButton deleteRadioBtn;
+
+    @FXML
+    private RadioButton addRadioBtn;
+
+    @FXML
+    private RadioButton findRadioBtn;
 
     @FXML
     private Button homeButton;
@@ -88,13 +91,16 @@ public class ProductsViewController implements Initializable {
     private TextField priceTextField;
 
     @FXML
-    private Button addProductButton;
+    private Button submitButton;
 
     @FXML
     private TableColumn<?, ?> retailPriceColumn;
 
     @FXML
     private Button categoriesButton;
+
+    @FXML
+    private Button refreshButton;
 
     @FXML
     private TextField upcTextField;
@@ -105,6 +111,8 @@ public class ProductsViewController implements Initializable {
     @FXML
     private TextField manufacturerTextField;
 
+    @FXML ToggleGroup toggleGroup;
+
     private User currentUser;
 
     private ObservableList<Product> productsList = FXCollections.observableArrayList();
@@ -113,18 +121,28 @@ public class ProductsViewController implements Initializable {
 
     private Authorizer authorizer = new Authorizer();
 
+//    upcTextField.managedProperty().bind(upcTextField.visibleProperty());
+
+
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+
+//        upcTextField.managedProperty().bind(upcTextField.visibleProperty());
         updateTable();
     }
 
-
+    /**
+     * Initiate data from the calling JavaFX window. Display current user's username
+     * @param user - current authenticated user
+     */
     public void initData(User user) {
         currentUser = user;
-
         usernameDisplay.setText("User: " + currentUser.GetUsername());
     }
 
+    /**
+     * update table to reflect current data in database
+     */
     public void updateTable() {
 
         try {
@@ -165,10 +183,214 @@ public class ProductsViewController implements Initializable {
         }
     }
 
+    public void radioButtonChanged() {
+        try {
+            // if add selected, show all text fields
+            if (this.toggleGroup.getSelectedToggle() == null) {
+                buttonStatus.setText("*Please select either Find, Add, or Delete*");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
+                return;
+            }
+            if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
+                upcTextField.setVisible(true);
+                upcTextField.setManaged(true);
+                productNameTextField.setManaged(true);
+                productNameTextField.setVisible(true);
+                priceTextField.setVisible(true);
+                priceTextField.setManaged(true);
+                quantityTextField.setVisible(true);
+                quantityTextField.setManaged(true);
+                manufacturerTextField.setVisible(true);
+                manufacturerTextField.setManaged(true);
+                categoryTextField.setVisible(true);
+                categoryTextField.setManaged(true);
+
+                submitButton.setText("Add Product");
+            }
+            // else if delete selected, show only UPC and name text fields
+            else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
+                upcTextField.setManaged(true);
+                productNameTextField.setManaged(true);
+                priceTextField.setVisible(false);
+                priceTextField.setManaged(false);
+                quantityTextField.setVisible(false);
+                quantityTextField.setManaged(false);
+                manufacturerTextField.setVisible(false);
+                manufacturerTextField.setManaged(false);
+                categoryTextField.setVisible(false);
+                categoryTextField.setManaged(false);
+
+                submitButton.setText("Delete Product");
+            }
+            // else if find selected, only show UPC and product name text fields
+            else if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
+                upcTextField.setManaged(true);
+                productNameTextField.setManaged(true);
+                priceTextField.setVisible(false);
+                priceTextField.setManaged(false);
+                quantityTextField.setVisible(false);
+                quantityTextField.setManaged(false);
+                manufacturerTextField.setVisible(false);
+                manufacturerTextField.setManaged(false);
+                categoryTextField.setVisible(false);
+                categoryTextField.setManaged(false);
+
+                submitButton.setText("Find Product");
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void submitButtonClicked() {
+        try {
+            if (this.toggleGroup.getSelectedToggle() == null) {
+                buttonStatus.setText("*Please select either Find, Add, or Delete*");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
+                return;
+            }
+            else if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
+                addProduct();
+            } else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
+                deleteProduct();
+            } else if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
+                findProduct();
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void signOutButtonPressed(ActionEvent event) {
+
+        try {
+            URL url = Paths.get("./src/main/java/inventory/views/Login.fxml").toUri().toURL();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent productViewParent = loader.load();
+            Scene loginScene = new Scene(productViewParent);
+
+            // access the controller of Products view to use controller to pass in user to initData()
+            LoginController controller = loader.getController();
+
+            // get stage info
+            Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+            window.setScene(loginScene);
+            window.show();
+
+        }catch (MalformedURLException e) {
+            e.printStackTrace();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void findProduct() {
+        Product foundProduct = null;
+
+        try {
+
+            final String ACTION = "read";
+            boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
+
+            // if user is authorized for this action, let them do it, else return and notify user
+            if (allowed) {
+                // get string versions of the input
+                String upc = upcTextField.getText();
+                String productName = productNameTextField.getText();
+
+                if (upc == "" && productName == "") {
+                    buttonStatus.setText("Please enter a UPC or a product name to search for");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                foundProduct = handler.getProductByUpcAndName(upc, productName);
+
+                if (foundProduct != null) {
+                    productsList.clear();
+                    productsTable.getItems().clear();
+                    productsList.setAll(foundProduct);
+                    productsTable.setItems(productsList);
+                }
+                else {
+                    buttonStatus.setText("No products match that criteria");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                }
+            }
+            else {
+                buttonStatus.setText("You are not authorized for this action");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProduct() {
+        try {
+            final String ACTION = "delete";
+            boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
+
+            // if user is authorized for this action, let them do it, else return and notify user
+            if (allowed) {
+                // get string versions of the input
+                String upc = upcTextField.getText();
+                String productName = productNameTextField.getText();
+
+                Product foundProduct = handler.getProductByUpcAndName(upc, productName);
+
+                if (foundProduct == null) {
+                    buttonStatus.setText("There were no products matching the search criteria");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                // show confirmation window for user to verify that they want to add the new product to the database
+                boolean confirmed = showPopup(currentUser, foundProduct, "delete");
+
+                // if user says they don't want to delete the product, don't delete it
+                if (!confirmed) {
+                    buttonStatus.setText("Product was not deleted");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                //FIXME: fix the deleteProduct() method in DBHandler class
+                boolean added = handler.deleteProduct(foundProduct.getUpc());
+
+                // if product was successfully deleted, notify user
+                if (added) {
+                    upcTextField.clear();
+                    productNameTextField.clear();
+                    priceTextField.clear();
+                    quantityTextField.clear();
+                    manufacturerTextField.clear();
+                    categoryTextField.clear();
+                    buttonStatus.setText("Product successfully deleted");
+                    buttonStatus.setTextFill(Paint.valueOf("blue"));
+
+                    // update table to reflect deletion
+                    updateTable();
+                }
+            }
+            else {
+                buttonStatus.setText("You are not authorized for this action");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
-     * Add button clicked, lets user add a new product to the database
+     * Submit button clicked, lets user add, find, or delete product from database
      */
-    public void addButtonClicked() {
+    public void addProduct() {
         try {
             final String ACTION = "create";
             boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
@@ -229,7 +451,7 @@ public class ProductsViewController implements Initializable {
                 System.out.println(newProduct.getManufacturerInt() + " / " + newProduct.getSubcategoryInt());
 
                 // show confirmation window for user to verify that they want to add the new product to the database
-                boolean confirmed = showPopup(currentUser, newProduct);
+                boolean confirmed = showPopup(currentUser, newProduct, "add");
 
                 // if user says they don't want to add the product to the database, don't add it
                 if (!confirmed) {
@@ -242,6 +464,12 @@ public class ProductsViewController implements Initializable {
 
                 // if product was succesffully inserted into database, notify user
                 if (added) {
+                    upcTextField.clear();
+                    productNameTextField.clear();
+                    priceTextField.clear();
+                    quantityTextField.clear();
+                    manufacturerTextField.clear();
+                    categoryTextField.clear();
                     buttonStatus.setText("Product successfully added");
                     buttonStatus.setTextFill(Paint.valueOf("green"));
                 }
@@ -254,31 +482,17 @@ public class ProductsViewController implements Initializable {
                 buttonStatus.setText("You are not authorized for this action");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
             }
-
-
-
-
-            /*
-            add product:
-            1 - XXXX enter upc, name, price, and stock, manufacturer, category
-            2 - query manufacturer and subcategory tables for a match
-            3 - window pops up, prints user input for confirmation
-            4 - print success, or say try again
-            5 - pop up window closes and products table updates
-             */
-
-
         }catch(Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    private boolean showPopup(User currentUser, Product newProduct) {
+
+    private boolean showPopup(User currentUser, Product newProduct, String addOrDelete) {
         boolean confirmed = false;
 
         try {
-            URL url = Paths.get("./src/main/java/inventory/views/AddProduct.fxml").toUri().toURL();
+            URL url = Paths.get("./src/main/java/inventory/views/AddDeleteProduct.fxml").toUri().toURL();
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(url);
@@ -286,14 +500,14 @@ public class ProductsViewController implements Initializable {
             Scene addProductScene = new Scene(productsViewParent);
 
             // access the controller of AddProduct view to pass in user and newProduct to initData()
-            AddProductController controller = loader.getController();
-            controller.initData(currentUser, newProduct);
+            AddDeleteProductController controller = loader.getController();
+            controller.initData(currentUser, newProduct, addOrDelete);
 
             // get stage info
             Stage window = new Stage();
             window.setScene(addProductScene);
             window.initModality(Modality.APPLICATION_MODAL);
-            window.initOwner(addProductButton.getScene().getWindow());
+            window.initOwner(submitButton.getScene().getWindow());
             window.showAndWait();
             confirmed = controller.getResult();
 
@@ -302,6 +516,7 @@ public class ProductsViewController implements Initializable {
         }
         return confirmed;
     }
+
 
     /**
      * Change scene to home scene
@@ -372,6 +587,11 @@ public class ProductsViewController implements Initializable {
         return subcategoryId;
     }
 
+    /**
+     * See if UPC is already taken in the database
+     * @param userInput - UPC string to be checked
+     * @return true if user input matches a an existing product's UPC
+     */
     public boolean checkUpc(String userInput) {
         boolean isThere = false;
         if (productsList.contains(userInput)) {

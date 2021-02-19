@@ -81,7 +81,7 @@
                   <Insets left="55.0" />
                </padding>
             </Button>
-            <Button fx:id="signOutButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="306.0" style="-fx-background-color: #FBF5E6;" text="Sign Out">
+            <Button fx:id="signOutButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="306.0" style="-fx-background-color: #FBF5E6;" text="Sign Out" onAction="#signOutButtonPressed" >
                <graphic>
                   <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                      <image>
