@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
@@ -81,7 +83,7 @@
                   <Insets left="55.0" />
                </padding>
             </Button>
-            <Button fx:id="signOutButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="306.0" style="-fx-background-color: #FBF5E6;" text="Sign Out" onAction="#signOutButtonPressed" >
+            <Button fx:id="signOutButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" onAction="#signOutButtonPressed" prefHeight="50.0" prefWidth="306.0" style="-fx-background-color: #FBF5E6;" text="Sign Out">
                <graphic>
                   <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -103,5 +105,104 @@
             <Label fx:id="usernameDisplay" alignment="CENTER" prefHeight="31.0" prefWidth="246.0" style="-fx-background-color: transparent;" text="User: ..." />
          </children>
       </VBox>
+      <AnchorPane layoutX="256.0" prefHeight="900.0" prefWidth="1054.0" AnchorPane.leftAnchor="246.0">
+         <children>
+            <Label fx:id="title" alignment="TOP_LEFT" layoutY="96.0" prefHeight="43.0" prefWidth="954.0" text="Inventory Home" textFill="#d14a0f" wrapText="true" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="93.0">
+               <font>
+                  <Font name="Lucida Bright Regular" size="30.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" layoutX="49.0" layoutY="162.0" prefHeight="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0">
+               <children>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label text="Today's Revenue:" textFill="#d14a0f">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label text="\$">
+                                 <font>
+                                    <Font size="26.0" />
+                                 </font>
+                              </Label>
+                              <Label text="100">
+                                 <font>
+                                    <Font size="26.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label text="YTD Revenue:" textFill="#d14a0f">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label text="\$">
+                                 <font>
+                                    <Font size="26.0" />
+                                 </font>
+                              </Label>
+                              <Label text="100">
+                                 <font>
+                                    <Font size="26.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="70.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label text="YTD Transactions:" textFill="#d14a0f">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label text="100">
+                           <font>
+                              <Font size="26.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="70.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label text="Products With Low Stock:" textFill="#d14a0f">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label text="100">
+                           <font>
+                              <Font size="26.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="70.0" />
+                     </HBox.margin>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>
