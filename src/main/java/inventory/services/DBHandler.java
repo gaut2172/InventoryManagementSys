@@ -1,9 +1,11 @@
 package inventory.services;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import inventory.models.Manufacturer;
 import inventory.models.Product;
@@ -199,6 +201,95 @@ public class DBHandler {
 
 		return foundProduct;
 	}
+
+
+	public ArrayList<Product> getProductsWithLowStock() {
+		ArrayList<Product> productsList = new ArrayList<>();
+
+		Product currProduct = null;
+
+		try {
+			String sql = "SELECT * FROM view_products_1 WHERE quantity <= 5";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet
+			while (results.next()) {
+				currProduct = new Product(results.getString(2), results.getString(3), results.getInt(4),
+						results.getDouble(5), results.getString(6), results.getString(7));
+
+				productsList.add(currProduct);
+			}
+			DBConnection.disconnect(conn);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return productsList;
+	}
+
+
+	public String[][] getTotalSalesByProduct() {
+		String[] currRow = new String[4];
+
+		try {
+			String sql1 = "SELECT COUNT(*) FROM view_popular_products_1";
+			Connection conn1 = DBConnection.getConnection();
+			PreparedStatement stmt1 = conn1.prepareStatement(sql1);
+
+			// execute SQL command and record results
+			ResultSet results1 = stmt1.executeQuery();
+
+			int numRows = 0;
+			// iterate through ResultSet
+			while (results1.next()) {
+				numRows = results1.getInt(1);
+			}
+
+			DBConnection.disconnect(conn1);
+
+			if (numRows == 0) {
+				return null;
+			}
+			String[][] resultsArray = new String[numRows][4];
+
+			String sql2 = "SELECT * FROM view_popular_products_1";
+			Connection conn2 = DBConnection.getConnection();
+			PreparedStatement stmt2 = conn2.prepareStatement(sql2);
+
+			// execute SQL command and record results
+			ResultSet results2 = stmt2.executeQuery();
+
+			int counter = 0;
+			// iterate through ResultSet
+			while (results2.next()) {
+				currRow[0] = results2.getString(1);
+				currRow[1] = results2.getString(2);
+				currRow[2] = results2.getString(3);
+				currRow[3] = results2.getString(4);
+
+				resultsArray[counter] = Arrays.copyOf(currRow, currRow.length);
+
+//				System.out.println("Here is one results2 iteration (currRow):");
+//				for (int i = 0; i < resultsArray.length; i++) {
+//					System.out.println(resultsArray[i][0]);
+//				}
+//				System.out.println("counter BEFORE INCREMENT: " + counter);
+
+				counter++;
+
+//				System.out.println();
+			}
+			DBConnection.disconnect(conn2);
+			return resultsArray;
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	/**
 	 * Get list of all products in the database
@@ -210,7 +301,6 @@ public class DBHandler {
 		Product product = null;
 		
 		try {
-			// parameterize SQL statement to deter SQL injection attacks
 			String sql = "SELECT * FROM view_products_1";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
