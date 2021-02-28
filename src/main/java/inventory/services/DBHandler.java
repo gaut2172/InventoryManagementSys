@@ -7,10 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import inventory.models.Manufacturer;
-import inventory.models.Product;
-import inventory.models.Customer;
-import inventory.models.Subcategory;
+import inventory.models.*;
 
 /**
  * CRUD handler for database
@@ -231,8 +228,8 @@ public class DBHandler {
 	}
 
 
-	public String[][] getTotalSalesByProduct() {
-		String[] currRow = new String[4];
+	public ArrayList<Row> getTotalSalesByProduct() {
+		ArrayList<Row> totalSalesList = new ArrayList<>();
 
 		try {
 			String sql1 = "SELECT COUNT(*) FROM view_popular_products_1";
@@ -253,7 +250,6 @@ public class DBHandler {
 			if (numRows == 0) {
 				return null;
 			}
-			String[][] resultsArray = new String[numRows][4];
 
 			String sql2 = "SELECT * FROM view_popular_products_1";
 			Connection conn2 = DBConnection.getConnection();
@@ -262,28 +258,13 @@ public class DBHandler {
 			// execute SQL command and record results
 			ResultSet results2 = stmt2.executeQuery();
 
-			int counter = 0;
 			// iterate through ResultSet
 			while (results2.next()) {
-				currRow[0] = results2.getString(1);
-				currRow[1] = results2.getString(2);
-				currRow[2] = results2.getString(3);
-				currRow[3] = results2.getString(4);
-
-				resultsArray[counter] = Arrays.copyOf(currRow, currRow.length);
-
-//				System.out.println("Here is one results2 iteration (currRow):");
-//				for (int i = 0; i < resultsArray.length; i++) {
-//					System.out.println(resultsArray[i][0]);
-//				}
-//				System.out.println("counter BEFORE INCREMENT: " + counter);
-
-				counter++;
-
-//				System.out.println();
+				Row currRow = new Row(results2.getString(2), results2.getInt(3));
+				totalSalesList.add(currRow);
 			}
 			DBConnection.disconnect(conn2);
-			return resultsArray;
+			return totalSalesList;
 
 		}catch(Exception e) {
 			e.printStackTrace();

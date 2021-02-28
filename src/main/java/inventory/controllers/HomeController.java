@@ -1,6 +1,7 @@
 package inventory.controllers;
 
 import inventory.models.Product;
+import inventory.models.Row;
 import inventory.models.User;
 import inventory.services.DBHandler;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,13 +65,13 @@ public class HomeController {
     private TableColumn<?,?> lowStockQuantityCol;
 
     @FXML
-    private TableView<String[]> popularProductsTable;
+    private TableView<Row> popularProductsTable;
 
     @FXML
-    private TableColumn<String[], String> popularProdNameCol;
+    private TableColumn<Row, String> popularProdNameCol;
 
     @FXML
-    private TableColumn<String[], String> popularProdSalesCol;
+    private TableColumn<Row, String> popularProdSalesCol;
 
     @FXML
     private Label usernameDisplay;
@@ -79,7 +80,7 @@ public class HomeController {
 
     private ObservableList<Product> lowStockProdList = FXCollections.observableArrayList();
 
-    private ObservableList<String> popularProdList = FXCollections.observableArrayList();
+    private ObservableList<Row> popularProdList = FXCollections.observableArrayList();
 
     private DBHandler handler = new DBHandler();
 
@@ -119,41 +120,12 @@ public class HomeController {
             popularProdNameCol = new TableColumn<>("Product Name");
             popularProdSalesCol = new TableColumn<>("Quantity in Stock");
 
-            // load the data from database into a String array
-            String[][] stringArray = handler.getTotalSalesByProduct();
-
-            for (int i = 0; i < stringArray.length; i++) {
-                for (int j = 0; j < stringArray[i].length; j++) {
-                    System.out.println(stringArray[i][j]);
-                }
-                System.out.println();
-            }
-
-            // change how columns get data from the data. Need this code for using String[][] data to update table
-            popularProdNameCol.setCellValueFactory(p -> {
-                String[] x = p.getValue();
-                if (x != null && x.length>0) {
-                    System.out.println("popularProdSalesCol x[1]= " + x[1]);
-                    return new SimpleStringProperty(x[1]);
-                } else {
-                    System.out.println("x was NULL!!!!!");
-                    return new SimpleStringProperty("<no name>");
-                }
-            });
-
-            // change how columns get data from the data. Need this code for using String[][] data to update table
-            popularProdSalesCol.setCellValueFactory(p -> {
-                String[] x = p.getValue();
-                if (x != null && x.length>0) {
-                    System.out.println("popularProdSalesCol x[2]= " + x[2]);
-                    return new SimpleStringProperty(x[2]);
-                } else {
-                    return new SimpleStringProperty("<no name>");
-                }
-            });
+            // load the data from database into an Observable list
+            ArrayList<Row> arrayListPopProducts = handler.getTotalSalesByProduct();
+            popularProdList = FXCollections.observableArrayList(arrayListPopProducts);
 
             // add the String array to the JavaFX table
-            popularProductsTable.getItems().addAll(Arrays.asList(stringArray));
+            popularProductsTable.setItems(popularProdList);
         }catch(Exception e) {
             e.printStackTrace();
         }
