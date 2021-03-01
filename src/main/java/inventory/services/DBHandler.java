@@ -271,7 +271,67 @@ public class DBHandler {
 		}
 		return null;
 	}
-	
+
+	public int getYTDTransactions() {
+		int numOfTransactions = 0;
+
+		try {
+			String sql = "SELECT COUNT(*) FROM inventory.view_invoice_customer_1 WHERE orderTimestamp BETWEEN '2021-01-01' AND '2021-12-31'";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			ResultSet results = stmt.executeQuery();
+
+			results.next();
+			numOfTransactions = results.getInt(1);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return numOfTransactions;
+	}
+
+	public double getYTDRevenue() {
+		double ytdRevenue = 0.00;
+
+		try {
+			String sql = "SELECT SUM(totalPaid) FROM inventory.view_invoice_customer_1 WHERE orderTimestamp BETWEEN '2021-01-01' AND '2021-12-31'";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			ResultSet results = stmt.executeQuery();
+
+			results.next();
+			ytdRevenue = results.getDouble(1);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return ytdRevenue;
+	}
+
+
+	public double getTodaysRevenue() {
+		double todaysRevenue = 0.00;
+
+		try {
+			String sql = "SELECT SUM(totalPaid) FROM inventory.view_invoice_customer_1 WHERE orderTimestamp >= CURDATE() " +
+					"AND orderTimestamp < CURDATE() + INTERVAL 1 DAY";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			ResultSet results = stmt.executeQuery();
+
+			results.next();
+			todaysRevenue = results.getDouble(1);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return todaysRevenue;
+	}
+
+
 	/**
 	 * Get list of all products in the database
 	 * @return arrayList of all the products

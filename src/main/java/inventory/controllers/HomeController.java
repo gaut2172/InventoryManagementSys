@@ -4,8 +4,6 @@ import inventory.models.Product;
 import inventory.models.Row;
 import inventory.models.User;
 import inventory.services.DBHandler;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,15 +14,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 
 public class HomeController {
 
@@ -90,6 +85,9 @@ public class HomeController {
         usernameDisplay.setText("User: " + currentUser.GetUsername());
 
         // FIXME: display correct figures for dashboard
+        todayRevenue.setText(String.format("%.2f", handler.getTodaysRevenue()));
+        ytdRevenue.setText(String.format("%.2f", handler.getYTDRevenue()));
+        ytdTransactions.setText(String.valueOf(handler.getYTDTransactions()));
         updateLowStockTable();
         updatePopularProdTable();
     }

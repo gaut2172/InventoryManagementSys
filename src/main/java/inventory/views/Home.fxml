@@ -188,6 +188,9 @@
                      </children>
                   </HBox>
                </children>
+               <effect>
+                  <DropShadow />
+               </effect>
             </StackPane>
             <TableView fx:id="lowStockTable" layoutX="100.0" layoutY="388.0">
               <columns>
@@ -205,28 +208,54 @@
             </TableView>
             <TableView fx:id="popularProductsTable" layoutX="573.0" layoutY="388.0">
                <columns>
-                  <TableColumn fx:id="popularProdNameCol" prefWidth="229.0" text="Product Name" >
+                  <TableColumn fx:id="popularProdNameCol" prefWidth="229.0" text="Product Name">
                      <cellValueFactory>
                         <PropertyValueFactory property="name" />
                      </cellValueFactory>
                   </TableColumn>
-                  <TableColumn fx:id="popularProdSalesCol" prefWidth="150.0" text="Total Sales" >
+                  <TableColumn fx:id="popularProdSalesCol" prefWidth="150.0" text="Total Sales">
                      <cellValueFactory>
                         <PropertyValueFactory property="totalSales" />
                      </cellValueFactory>
                   </TableColumn>
                </columns>
             </TableView>
-            <Label alignment="CENTER" layoutX="197.0" layoutY="343.0" text="Products With Low Stock" textAlignment="CENTER" textFill="#fa1a19" underline="true">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <Label alignment="CENTER" layoutX="699.0" layoutY="343.0" text="Popular Products" textAlignment="CENTER" textFill="#976329" underline="true">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
+            <StackPane layoutX="145.0" layoutY="332.0" style="-fx-background-color: #E8D5C0;">
+               <children>
+                  <Label alignment="CENTER" text="Products With Low Stock:" textAlignment="CENTER" textFill="#6e441f">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" left="50.0" right="50.0" top="5.0" />
+                     </padding>
+                  </Label>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <effect>
+                  <DropShadow />
+               </effect>
+            </StackPane>
+            <StackPane layoutX="648.0" layoutY="332.0" style="-fx-background-color: #E8D5C0;">
+               <children>
+                  <Label alignment="CENTER" text="Popular Products:" textAlignment="CENTER" textFill="#6e441f">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" left="50.0" right="50.0" top="5.0" />
+                     </padding>
+                  </Label>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <effect>
+                  <DropShadow />
+               </effect>
+            </StackPane>
          </children>
       </AnchorPane>
    </children>
