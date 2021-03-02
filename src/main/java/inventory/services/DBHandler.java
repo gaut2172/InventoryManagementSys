@@ -407,7 +407,7 @@ public class DBHandler {
 		Manufacturer currManufacturer;
 
 		try {
-			// parameterize SQL statement to deter SQL injection attacks
+			// prepare SQL query
 			String sql = "SELECT * FROM view_manufacturers_1";
 			Connection conn = DBConnection.getConnection();
 			PreparedStatement stmt = conn.prepareStatement(sql);
@@ -426,5 +426,30 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 		return manufacturers;
+	}
+
+	public ArrayList<Order> getAllInvoiceOrders() {
+		ArrayList<Order> invoiceList = new ArrayList<>();
+		Order currOrder;
+
+		try {
+			// prepare SQL query
+			String sql = "SELECT * FROM inventory.view_invoice_customer_1";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each manufacturer to list
+			while (results.next()) {
+
+			}
+			DBConnection.disconnect(conn);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return invoiceList;
 	}
 }

@@ -121,13 +121,10 @@ public class ProductsViewController implements Initializable {
 
     private Authorizer authorizer = new Authorizer();
 
-//    upcTextField.managedProperty().bind(upcTextField.visibleProperty());
 
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-
-//        upcTextField.managedProperty().bind(upcTextField.visibleProperty());
         updateTable();
     }
 
