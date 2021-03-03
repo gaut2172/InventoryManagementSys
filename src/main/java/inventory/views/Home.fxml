@@ -71,7 +71,7 @@
                   <Insets left="55.0" />
                </padding>
             </Button>
-            <Button fx:id="transactionsButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="263.0" style="-fx-background-color: #FBF5E6;" text="Transactions">
+            <Button fx:id="transactionsButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" onAction="#changeToTransactionsScene" prefHeight="50.0" prefWidth="263.0" style="-fx-background-color: #FBF5E6;" text="Transactions">
                <graphic>
                   <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                      <image>

@@ -430,7 +430,6 @@ public class DBHandler {
 
 	public ArrayList<Order> getAllInvoiceOrders() {
 		ArrayList<Order> invoiceList = new ArrayList<>();
-		Order currOrder;
 
 		try {
 			// prepare SQL query
@@ -443,7 +442,10 @@ public class DBHandler {
 
 			// iterate through ResultSet, adding each manufacturer to list
 			while (results.next()) {
-
+				Order currOrder = new Order(results.getInt(1), results.getInt(2), results.getInt(3),
+						results.getDouble(4), results.getString(5), results.getString(6),
+						results.getString(7), results.getString(8));
+				invoiceList.add(currOrder);
 			}
 			DBConnection.disconnect(conn);
 

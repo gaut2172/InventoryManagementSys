@@ -81,10 +81,8 @@ public class HomeController {
 
     public void initData(User user) {
         currentUser = user;
-
         usernameDisplay.setText("User: " + currentUser.GetUsername());
 
-        // FIXME: display correct figures for dashboard
         todayRevenue.setText(String.format("%.2f", handler.getTodaysRevenue()));
         ytdRevenue.setText(String.format("%.2f", handler.getYTDRevenue()));
         ytdTransactions.setText(String.valueOf(handler.getYTDTransactions()));
@@ -140,8 +138,8 @@ public class HomeController {
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(url);
-            Parent ProductsViewParent = loader.load();
-            Scene homeScene = new Scene(ProductsViewParent);
+            Parent productsViewParent = loader.load();
+            Scene productsScene = new Scene(productsViewParent);
 
             // access the controller of Products view to use controller to pass in user to initData()
             ProductsViewController controller = loader.getController();
@@ -150,7 +148,36 @@ public class HomeController {
             // get stage info
             Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
 
-            window.setScene(homeScene);
+            window.setScene(productsScene);
+            window.show();
+
+        }catch (MalformedURLException e) {
+            e.printStackTrace();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeToTransactionsScene(ActionEvent event) {
+
+        try {
+            URL url = Paths.get("./src/main/java/inventory/views/Transactions.fxml").toUri().toURL();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent TransactionsViewParent = loader.load();
+            Scene transactionsScene = new Scene(TransactionsViewParent);
+
+            // access the controller of Products view to use controller to pass in user to initData()
+            TransactionsController controller = loader.getController();
+            controller.initData(currentUser);
+
+            // get stage info
+            Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+            window.setScene(transactionsScene);
             window.show();
 
         }catch (MalformedURLException e) {

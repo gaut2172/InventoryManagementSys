@@ -34,7 +34,7 @@
                   <Insets left="55.0" />
                </padding>
             </Button>
-            <Button fx:id="productsButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="258.0" style="-fx-background-color: #FBF5E6;" text="Products">
+            <Button fx:id="productsButton" alignment="BASELINE_LEFT" graphicTextGap="15.0" mnemonicParsing="false" onAction="#changeToProductScene" prefHeight="50.0" prefWidth="258.0" style="-fx-background-color: #FBF5E6;" text="Products">
                <graphic>
                   <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -103,7 +103,7 @@
       </VBox>
       <AnchorPane layoutX="246.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="246.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button fx:id="refreshButton" layoutX="916.0" layoutY="159.0" mnemonicParsing="false" onAction="#updateTable" text="Refresh Table" AnchorPane.rightAnchor="50.0" />
+            <Button fx:id="refreshButton" layoutX="916.0" layoutY="159.0" mnemonicParsing="false" onAction="#updateTransactionsTable" text="Refresh Table" AnchorPane.rightAnchor="50.0" />
             <Label fx:id="title" layoutX="49.0" layoutY="91.0" text="Invoice Transactions" textFill="#d14a0f" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="93.0">
                <font>
                   <Font name="Lucida Bright Regular" size="30.0" />
@@ -113,42 +113,42 @@
                <columns>
                   <TableColumn fx:id="orderIdColumn" prefWidth="105.0" text="Order ID">
                      <cellValueFactory>
-                        <PropertyValueFactory property="upc" />
+                        <PropertyValueFactory property="orderID" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="productIdColumn" prefWidth="93.0" text="Product ID">
                      <cellValueFactory>
-                        <PropertyValueFactory property="productName" />
+                        <PropertyValueFactory property="productID" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="orderQuantityColumn" prefWidth="98.0" text="Order Quantity">
                      <cellValueFactory>
-                        <PropertyValueFactory property="price" />
+                        <PropertyValueFactory property="orderQuantity" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="totalPaidColumn" prefWidth="83.0" text="Total Paid">
                      <cellValueFactory>
-                        <PropertyValueFactory property="quantity" />
+                        <PropertyValueFactory property="totalPaid" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="dateTimeColumn" prefWidth="185.0" text="Transaction Time">
                      <cellValueFactory>
-                        <PropertyValueFactory property="manufacturer" />
+                        <PropertyValueFactory property="dateTimeString" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="firstNameColumn" prefWidth="99.0" text="First Name">
                      <cellValueFactory>
-                        <PropertyValueFactory property="subcategory" />
+                        <PropertyValueFactory property="firstName" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="lastNameColumn" prefWidth="98.0" text="Last Name">
                      <cellValueFactory>
-                        <PropertyValueFactory property="subcategory" />
+                        <PropertyValueFactory property="lastName" />
                      </cellValueFactory>
                   </TableColumn>
                   <TableColumn fx:id="emailColumn" prefWidth="192.0" text="Email">
                      <cellValueFactory>
-                        <PropertyValueFactory property="subcategory" />
+                        <PropertyValueFactory property="email" />
                      </cellValueFactory>
                   </TableColumn>
                </columns>

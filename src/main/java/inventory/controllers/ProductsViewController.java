@@ -180,9 +180,12 @@ public class ProductsViewController implements Initializable {
         }
     }
 
+
+    /**
+     * Change options based on radio button selection
+     */
     public void radioButtonChanged() {
         try {
-            // if add selected, show all text fields
             if (this.toggleGroup.getSelectedToggle() == null) {
                 buttonStatus.setText("*Please select either Find, Add, or Delete*");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
@@ -357,7 +360,6 @@ public class ProductsViewController implements Initializable {
                     return;
                 }
 
-                //FIXME: fix the deleteProduct() method in DBHandler class
                 boolean added = handler.deleteProduct(foundProduct.getUpc());
 
                 // if product was successfully deleted, notify user
@@ -385,7 +387,7 @@ public class ProductsViewController implements Initializable {
     }
 
     /**
-     * Submit button clicked, lets user add, find, or delete product from database
+     *
      */
     public void addProduct() {
         try {
@@ -537,6 +539,36 @@ public class ProductsViewController implements Initializable {
             Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
 
             window.setScene(homeScene);
+            window.show();
+
+        }catch (MalformedURLException e) {
+            e.printStackTrace();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void changeToTransactionsScene(ActionEvent event) {
+
+        try {
+            URL url = Paths.get("./src/main/java/inventory/views/Transactions.fxml").toUri().toURL();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent TransactionsViewParent = loader.load();
+            Scene transactionsScene = new Scene(TransactionsViewParent);
+
+            // access the controller of Products view to use controller to pass in user to initData()
+            TransactionsController controller = loader.getController();
+            controller.initData(currentUser);
+
+            // get stage info
+            Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+            window.setScene(transactionsScene);
             window.show();
 
         }catch (MalformedURLException e) {
