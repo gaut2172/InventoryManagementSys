@@ -1,6 +1,6 @@
 package inventory.controllers;
 
-import inventory.models.Order;
+import inventory.models.Transaction;
 import inventory.models.Product;
 import inventory.models.User;
 import inventory.services.Authorizer;
@@ -23,13 +23,16 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.paint.Paint;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class TransactionsController implements Initializable {
@@ -59,7 +62,7 @@ public class TransactionsController implements Initializable {
     private TextField dateTimeTextField;
 
     @FXML
-    private TableView<Order> invoiceTable;
+    private TableView<Transaction> invoiceTable;
 
     @FXML
     private Label title;
@@ -132,7 +135,7 @@ public class TransactionsController implements Initializable {
 
     private User currentUser;
 
-    private ObservableList<Order> orderList;
+    private ObservableList<Transaction> transactionList;
 
     private DBHandler handler = new DBHandler();
 
@@ -143,6 +146,8 @@ public class TransactionsController implements Initializable {
         updateTransactionsTable();
         orderIdTextField.setVisible(false);
         orderIdTextField.setManaged(false);
+        dateTimeTextField.setVisible(false);
+        dateTimeTextField.setManaged(false);
     }
 
     public void initData(User user) {
@@ -267,10 +272,10 @@ public class TransactionsController implements Initializable {
             lastNameColumn = new TableColumn<>("Last Name");
             emailColumn = new TableColumn<>("Email");
 
-            ArrayList<Order> arrayList = handler.getAllInvoiceOrders();
-            orderList = FXCollections.observableArrayList(arrayList);
+            ArrayList<Transaction> arrayList = handler.getAllInvoiceOrders();
+            transactionList = FXCollections.observableArrayList(arrayList);
 
-            invoiceTable.setItems(orderList);
+            invoiceTable.setItems(transactionList);
 
             //FIXME: delete this print statement
             System.out.println("arrayList size: " + arrayList.size());
@@ -288,11 +293,16 @@ public class TransactionsController implements Initializable {
     @FXML
     void radioButtonChanged() {
         try {
+            // clear any previous status alerts
+            buttonStatus.setText("");
+
+            // if no radio button selected
             if (this.toggleGroup.getSelectedToggle() == null) {
                 buttonStatus.setText("*Please select either Find, Add, or Delete*");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
                 return;
             }
+            // if find radio button selected
             if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
                 orderIdTextField.setVisible(true);
                 orderIdTextField.setManaged(true);
@@ -313,6 +323,7 @@ public class TransactionsController implements Initializable {
 
                 submitButton.setText("Find Product");
             }
+            // if add radio button selected
             else if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
                 orderIdTextField.setVisible(false);
                 orderIdTextField.setManaged(false);
@@ -322,8 +333,8 @@ public class TransactionsController implements Initializable {
                 orderQuantityTextField.setManaged(true);
                 totalPaidTextField.setVisible(true);
                 totalPaidTextField.setManaged(true);
-                dateTimeTextField.setVisible(true);
-                dateTimeTextField.setManaged(true);
+                dateTimeTextField.setVisible(false);
+                dateTimeTextField.setManaged(false);
                 firstNameField.setVisible(true);
                 firstNameField.setManaged(true);
                 lastNameTextField.setVisible(true);
@@ -333,6 +344,7 @@ public class TransactionsController implements Initializable {
 
                 submitButton.setText("Add Product");
             }
+            // if delete buttons selected
             else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
                 orderIdTextField.setVisible(true);
                 orderIdTextField.setManaged(true);
@@ -368,8 +380,8 @@ public class TransactionsController implements Initializable {
             }
             else if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
                 // FIXME: finish
-//                addTransaction();
-//            } else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
+                addTransaction();
+            } else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
 //                deleteTransaction();
 //            } else if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
 //                findTransaction();
@@ -387,88 +399,104 @@ public class TransactionsController implements Initializable {
             // if user is authorized for this action, let them do it, else return and notify user
             if (allowed) {
                 // get string versions of the input
-                String productId = productIdTextField.getText();
-                String quantity = orderQuantityTextField.getText();
-                String totalPaid = totalPaidTextField.getText();
-                String dateTime = dateTimeTextField.getText();
+                String productIdString = productIdTextField.getText();
+                String quantityString = orderQuantityTextField.getText();
+                String totalPaidString = totalPaidTextField.getText();
                 String firstName = firstNameField.getText();
                 String lastName = lastNameTextField.getText();
                 String email = emailTextField.getText();
 
 
                 // if user input for quantity and price cannot be parsed to int and double, notify user
-                if (!ParseNumbers.isParsableInt(quantity) || !ParseNumbers.isParsableDouble(totalPaid)) {
+                if (!ParseNumbers.isParsableInt(productIdString) || !ParseNumbers.isParsableInt(quantityString) ||
+                        !ParseNumbers.isParsableDouble(totalPaidString)) {
                     buttonStatus.setText("*Make sure total price and quantity are in number format*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
+                // parse the strings to ints
+                int productId = Integer.parseInt(productIdString);
+                int quantity = Integer.parseInt(quantityString);
 
-                // if user input for dateTime is not in valid format, notify user
-                //FIXME: finish datetime check
-//
-//                // find corresponding manufacturer ID for the name input if exists
-//                int manufacturerInt = assignManufacturerInt(manufacturer);
-//
-//                // if user input for manufacturer is not in database, notify user
-//                if (manufacturerInt == 0) {
-//                    buttonStatus.setText("*Manufacturer name entered must already be in our database*");
-//                    buttonStatus.setTextFill(Paint.valueOf("red"));
-//                    return;
-//                }
-//
-//                // find corresponding subcategory ID for the name input if exists
-//                int subcategoryInt = assignSubcategoryInt(category);
-//
-//                //  if user input for subcategory is not in database, notify user
-//                if (subcategoryInt == 0) {
-//                    buttonStatus.setText("*Category name entered must already be in our database*");
-//                    buttonStatus.setTextFill(Paint.valueOf("red"));
-//                    return;
-//                }
-//
-//                // parse user input to int and double, then create new product instance from user input
-//                int quantity = Integer.parseInt(quantityString);
-//                double price = Double.parseDouble(priceString);
-//
-//                Product newProduct = new Product(upc, productName, quantity, price, manufacturerInt, subcategoryInt);
-//
-//                System.out.println(newProduct.getManufacturerInt() + " / " + newProduct.getSubcategoryInt());
-//
-//                // show confirmation window for user to verify that they want to add the new product to the database
-//                boolean confirmed = showPopup(currentUser, newProduct, "add");
-//
-//                // if user says they don't want to add the product to the database, don't add it
-//                if (!confirmed) {
-//                    buttonStatus.setText("Product was not saved to the database");
-//                    buttonStatus.setTextFill(Paint.valueOf("red"));
-//                    return;
-//                }
-//
-//                boolean added = handler.insertProduct(newProduct);
-//
-//                // if product was succesffully inserted into database, notify user
-//                if (added) {
-//                    upcTextField.clear();
-//                    productNameTextField.clear();
-//                    priceTextField.clear();
-//                    quantityTextField.clear();
-//                    manufacturerTextField.clear();
-//                    categoryTextField.clear();
-//                    buttonStatus.setText("Product successfully added");
-//                    buttonStatus.setTextFill(Paint.valueOf("green"));
-//                }
-//
-//                // update table so user can see new product
-//                updateTable();
-//            }
-//            // else user is not authorized for adding a product
-//            else{
-//                buttonStatus.setText("You are not authorized for this action");
-//                buttonStatus.setTextFill(Paint.valueOf("red"));
+                // get current time
+                Date now = new Date();
+                String timestampPattern = "yyyy-MM-dd HH:mm:ss";
+                SimpleDateFormat formatter = new SimpleDateFormat(timestampPattern);
+                String mysqlDateTime = formatter.format(now);
+
+                // create new transaction object
+                Transaction transactionToAdd = new Transaction(productId, quantity, totalPaidString, mysqlDateTime, firstName,
+                        lastName, email);
+
+                // confirm that user wants to add the new transaction
+                boolean confirmed = showPopup(currentUser, transactionToAdd, "add");
+
+                // if user says they don't want to add the transaction to the database, don't add it
+                if (!confirmed) {
+                    buttonStatus.setText("Product was not saved to the database");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                boolean added = handler.insertTransaction(transactionToAdd);
+
+                // if transaction was successfully inserted into database, notify user
+                if (added) {
+                    orderIdTextField.clear();
+                    productIdTextField.clear();
+                    orderQuantityTextField.clear();
+                    totalPaidTextField.clear();
+                    dateTimeTextField.clear();
+                    firstNameField.clear();
+                    lastNameTextField.clear();
+                    emailTextField.clear();
+                    buttonStatus.setText("Transaction successfully added");
+                    buttonStatus.setTextFill(Paint.valueOf("green"));
+                }
+
+                // update table so user can see new product
+                updateTransactionsTable();
+            }
+            // else user is not authorized for adding a product
+            else{
+                buttonStatus.setText("You are not authorized for this action");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
             }
         }catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    // FIXME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    private boolean showPopup(User currentUser, Transaction newTransaction, String addOrDelete) {
+        boolean confirmed = false;
+
+        try {
+            URL url = Paths.get("./src/main/java/inventory/views/AddDeleteTransaction.fxml").toUri().toURL();
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(url);
+            Parent transactionsParent = loader.load();
+            Scene addProductScene = new Scene(transactionsParent);
+
+            // access the controller of AddProduct view to pass in user and newProduct to initData()
+            AddDeleteTransactionsController controller = loader.getController();
+            controller.initData(currentUser, newTransaction, addOrDelete);
+
+            // get stage info
+            Stage window = new Stage();
+            window.setScene(addProductScene);
+            window.initModality(Modality.APPLICATION_MODAL);
+            window.initOwner(submitButton.getScene().getWindow());
+            window.showAndWait();
+            confirmed = controller.getResult();
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        return confirmed;
     }
 
 }

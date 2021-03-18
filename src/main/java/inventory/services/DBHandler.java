@@ -1,11 +1,11 @@
 package inventory.services;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Locale;
 
 import inventory.models.*;
 
@@ -428,8 +428,8 @@ public class DBHandler {
 		return manufacturers;
 	}
 
-	public ArrayList<Order> getAllInvoiceOrders() {
-		ArrayList<Order> invoiceList = new ArrayList<>();
+	public ArrayList<Transaction> getAllInvoiceOrders() {
+		ArrayList<Transaction> invoiceList = new ArrayList<>();
 
 		try {
 			// prepare SQL query
@@ -440,12 +440,12 @@ public class DBHandler {
 			// execute SQL command and record results
 			ResultSet results = stmt.executeQuery();
 
-			// iterate through ResultSet, adding each manufacturer to list
+			// iterate through ResultSet, adding each invoice to list
 			while (results.next()) {
-				Order currOrder = new Order(results.getInt(1), results.getInt(2), results.getInt(3),
-						results.getDouble(4), results.getString(5), results.getString(6),
+				Transaction currTransaction = new Transaction(results.getInt(1), results.getInt(2), results.getInt(3),
+						results.getString(4), results.getString(5), results.getString(6),
 						results.getString(7), results.getString(8));
-				invoiceList.add(currOrder);
+				invoiceList.add(currTransaction);
 			}
 			DBConnection.disconnect(conn);
 
@@ -453,5 +453,46 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 		return invoiceList;
+	}
+
+	/**
+	 * Insert a transaction into invoice_customer table
+	 * @param myTransaction - transaction to add
+	 * @return number of affected rows
+	 */
+	public boolean insertTransaction(Transaction myTransaction) {
+
+		boolean result = false;
+
+		try {
+			// parameterize SQL statement to stop SQL injections
+			String sql = "INSERT INTO invoice_customer (product, orderQuantity, totalPaid, orderTimestamp, firstName, " +
+					"lastName, email) VALUES (?,?,?,?,?,?,?)";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setInt(1, myTransaction.getProductID());
+			stmt.setInt(2, myTransaction.getOrderQuantity());
+			stmt.setString(3, myTransaction.getTotalPaid());
+			stmt.setString(4, myTransaction.getDateTimeString());
+			stmt.setString(5, myTransaction.getFirstName());
+			stmt.setString(6, myTransaction.getLastName());
+			stmt.setString(7, myTransaction.getEmail());
+
+			// execute SQL command
+			int inserted = stmt.executeUpdate();
+
+			// were there any affected rows?
+			result = inserted >= 1;
+
+			// disconnect
+			DBConnection.disconnect(conn);
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 }

@@ -186,11 +186,16 @@ public class ProductsViewController implements Initializable {
      */
     public void radioButtonChanged() {
         try {
+            // clear any previous status alerts
+            buttonStatus.setText("");
+
+            // if no radio button selected
             if (this.toggleGroup.getSelectedToggle() == null) {
                 buttonStatus.setText("*Please select either Find, Add, or Delete*");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
                 return;
             }
+            // if add radio button selected
             if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
                 upcTextField.setVisible(true);
                 upcTextField.setManaged(true);
@@ -241,9 +246,10 @@ public class ProductsViewController implements Initializable {
             e.printStackTrace();
         }
     }
-
+    
     public void submitButtonClicked() {
         try {
+            buttonStatus.setText("");
             if (this.toggleGroup.getSelectedToggle() == null) {
                 buttonStatus.setText("*Please select either Find, Add, or Delete*");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
@@ -497,6 +503,7 @@ public class ProductsViewController implements Initializable {
             loader.setLocation(url);
             Parent productsViewParent = loader.load();
             Scene addProductScene = new Scene(productsViewParent);
+
 
             // access the controller of AddProduct view to pass in user and newProduct to initData()
             AddDeleteProductController controller = loader.getController();
