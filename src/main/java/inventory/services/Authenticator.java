@@ -12,7 +12,7 @@ import inventory.models.User;
  * @author gaut2172
  *
  */
-public class MiddleLogin {
+public class Authenticator {
 	
 	// FIXME: Encrypt and decrypt the xml file
 	

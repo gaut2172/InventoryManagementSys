@@ -1,7 +1,7 @@
 package inventory.controllers;
 
 import inventory.models.User;
-import inventory.services.MiddleLogin;
+import inventory.services.Authenticator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +30,7 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
-    private MiddleLogin authenticator = new MiddleLogin();
+    private Authenticator authenticator = new Authenticator();
 
     private User currentUser = null;
 

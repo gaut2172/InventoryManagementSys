@@ -277,9 +277,6 @@ public class TransactionsController implements Initializable {
 
             invoiceTable.setItems(transactionList);
 
-            //FIXME: delete this print statement
-            System.out.println("arrayList size: " + arrayList.size());
-
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -321,7 +318,7 @@ public class TransactionsController implements Initializable {
                 emailTextField.setVisible(true);
                 emailTextField.setManaged(true);
 
-                submitButton.setText("Find Product");
+                submitButton.setText("Find Transaction");
             }
             // if add radio button selected
             else if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
@@ -342,7 +339,7 @@ public class TransactionsController implements Initializable {
                 emailTextField.setVisible(true);
                 emailTextField.setManaged(true);
 
-                submitButton.setText("Add Product");
+                submitButton.setText("Add Transaction");
             }
             // if delete buttons selected
             else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
@@ -363,7 +360,7 @@ public class TransactionsController implements Initializable {
                 emailTextField.setVisible(false);
                 emailTextField.setManaged(false);
 
-                submitButton.setText("Delete Product");
+                submitButton.setText("Delete Transaction");
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -373,6 +370,7 @@ public class TransactionsController implements Initializable {
     @FXML
     void submitButtonClicked(ActionEvent event) {
         try {
+            buttonStatus.setText("");
             if (this.toggleGroup.getSelectedToggle() == null) {
                 buttonStatus.setText("*Please select either Find, Add, or Delete*");
                 buttonStatus.setTextFill(Paint.valueOf("red"));
@@ -383,8 +381,8 @@ public class TransactionsController implements Initializable {
                 addTransaction();
             } else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
 //                deleteTransaction();
-//            } else if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
-//                findTransaction();
+            } else if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
+                findTransactions();
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -428,20 +426,33 @@ public class TransactionsController implements Initializable {
                 Transaction transactionToAdd = new Transaction(productId, quantity, totalPaidString, mysqlDateTime, firstName,
                         lastName, email);
 
+                // check the amount of stock for this product
+                Product dbProduct = handler.getProductById(productId);
+                int inStock = dbProduct.getQuantity();
+                // if there is not enough of the product in stock, notify user
+                if (quantity > inStock) {
+                    buttonStatus.setText("There is not enough stock to add that transaction");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
                 // confirm that user wants to add the new transaction
                 boolean confirmed = showPopup(currentUser, transactionToAdd, "add");
 
                 // if user says they don't want to add the transaction to the database, don't add it
                 if (!confirmed) {
-                    buttonStatus.setText("Product was not saved to the database");
+                    buttonStatus.setText("Transaction was not saved to the database");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
 
+                // insert the record to the invoice_customer table
                 boolean added = handler.insertTransaction(transactionToAdd);
+                // adjust the stock quantity of the product in the product table
+                boolean adjusted = handler.subtractProductQuantity(quantity, dbProduct.getUpc());
 
                 // if transaction was successfully inserted into database, notify user
-                if (added) {
+                if (added && adjusted) {
                     orderIdTextField.clear();
                     productIdTextField.clear();
                     orderQuantityTextField.clear();
@@ -452,6 +463,20 @@ public class TransactionsController implements Initializable {
                     emailTextField.clear();
                     buttonStatus.setText("Transaction successfully added");
                     buttonStatus.setTextFill(Paint.valueOf("green"));
+                }
+                else if (added) {
+                    buttonStatus.setText("Transaction was saved to database, but quantity did not update correctly " +
+                            "in the product table");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                }
+                else if (adjusted) {
+                    buttonStatus.setText("Transaction failed to save to database, but the quantity was altered in " +
+                            "the product table");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                }
+                else {
+                    buttonStatus.setText("Transaction did not get added to database");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
                 }
 
                 // update table so user can see new product
@@ -468,7 +493,52 @@ public class TransactionsController implements Initializable {
     }
 
 
-    // FIXME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public void findTransactions() {
+        try {
+            final String ACTION = "read";
+            boolean allowed = authorizer.IsAuthorized(currentUser, ACTION);
+
+            // if user is authorized for this action, let them do it, else return and notify user
+            if (allowed) {
+                // get string versions of the input
+                String orderIdString = orderIdTextField.getText();
+                String productIdString = productIdTextField.getText();
+                String firstName = firstNameField.getText();
+                String lastName = lastNameTextField.getText();
+                String email = emailTextField.getText();
+
+                if (orderIdString.isEmpty() && productIdString.isEmpty() &&  firstName.isEmpty() && lastName.isEmpty() &&
+                    email.isEmpty()) {
+                    buttonStatus.setText("Please enter a criteria to search for");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                ArrayList<Transaction> foundTransactions = handler.findTransactionsWithName(firstName, lastName);
+
+                if (foundTransactions == null) {
+                    buttonStatus.setText("No transactions match that criteria");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                transactionList.clear();
+                invoiceTable.getItems().clear();
+                transactionList = FXCollections.observableArrayList(foundTransactions);
+                invoiceTable.setItems(transactionList);
+
+            }
+            // else user is not authorized for adding a product
+            else{
+                buttonStatus.setText("You are not authorized for this action");
+                buttonStatus.setTextFill(Paint.valueOf("red"));
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     private boolean showPopup(User currentUser, Transaction newTransaction, String addOrDelete) {
         boolean confirmed = false;

@@ -117,32 +117,37 @@
             </Label>
             <TableView fx:id="productsTable" layoutX="74.0" layoutY="142.0" prefHeight="522.0" prefWidth="954.0" AnchorPane.bottomAnchor="178.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0">
               <columns>
+                  <TableColumn fx:id="idColumn" prefWidth="75.0" text="Product ID">
+                    <cellValueFactory>
+                       <PropertyValueFactory property="productID" />
+                    </cellValueFactory>
+                  </TableColumn>
                  <TableColumn fx:id="upcColumn" prefWidth="105.0" text="UPC">
                     <cellValueFactory>
                        <PropertyValueFactory property="upc" />
                     </cellValueFactory>
                  </TableColumn>
-                 <TableColumn fx:id="productNameColumn" prefWidth="229.0" text="Product Name">
+                 <TableColumn fx:id="productNameColumn" prefWidth="214.0" text="Product Name">
                     <cellValueFactory>
                        <PropertyValueFactory property="productName" />
                     </cellValueFactory>
                  </TableColumn>
-                 <TableColumn fx:id="retailPriceColumn" prefWidth="104.0" text="Retail Price">
+                 <TableColumn fx:id="retailPriceColumn" prefWidth="96.0" text="Retail Price">
                     <cellValueFactory>
                        <PropertyValueFactory property="price" />
                     </cellValueFactory>
                  </TableColumn>
-                 <TableColumn fx:id="inStockColumn" prefWidth="107.0" text="Quantity in Stock">
+                 <TableColumn fx:id="inStockColumn" prefWidth="130.0" text="Quantity in Stock">
                     <cellValueFactory>
                        <PropertyValueFactory property="quantity" />
                     </cellValueFactory>
                  </TableColumn>
-                 <TableColumn fx:id="manufacturerColumn" prefWidth="201.0" text="Manufacturer">
+                 <TableColumn fx:id="manufacturerColumn" prefWidth="136.0" text="Manufacturer">
                     <cellValueFactory>
                        <PropertyValueFactory property="manufacturer" />
                     </cellValueFactory>
                  </TableColumn>
-                 <TableColumn fx:id="subCategoryColumn" prefWidth="207.0" text="Category">
+                 <TableColumn fx:id="subCategoryColumn" prefWidth="197.0" text="Category">
                     <cellValueFactory>
                        <PropertyValueFactory property="subcategory" />
                     </cellValueFactory>
@@ -173,11 +178,12 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="49.0" layoutY="782.0" AnchorPane.bottomAnchor="93.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
                <children>
-                  <TextField fx:id="upcTextField" prefHeight="25.0" prefWidth="107.0" promptText="UPC" />
-                  <TextField fx:id="productNameTextField" prefHeight="25.0" prefWidth="228.0" promptText="Product Name" />
-                  <TextField fx:id="priceTextField" prefHeight="25.0" prefWidth="104.0" promptText="Retail Price" />
-                  <TextField fx:id="quantityTextField" prefHeight="25.0" prefWidth="107.0" promptText="Quantity in Stock" />
-                  <TextField fx:id="manufacturerTextField" prefHeight="25.0" prefWidth="201.0" promptText="Manufacturer" />
+                  <TextField fx:id="productIdTextField" prefHeight="25.0" prefWidth="100.0" promptText="Product ID" />
+                  <TextField fx:id="upcTextField" prefHeight="25.0" prefWidth="132.0" promptText="UPC" />
+                  <TextField fx:id="productNameTextField" prefHeight="25.0" prefWidth="236.0" promptText="Product Name" />
+                  <TextField fx:id="priceTextField" prefHeight="25.0" prefWidth="110.0" promptText="Retail Price" />
+                  <TextField fx:id="quantityTextField" prefHeight="25.0" prefWidth="132.0" promptText="Quantity in Stock" />
+                  <TextField fx:id="manufacturerTextField" prefHeight="25.0" prefWidth="149.0" promptText="Manufacturer" />
                   <TextField fx:id="categoryTextField" prefHeight="25.0" prefWidth="209.0" promptText="Category" />
                </children>
             </HBox>

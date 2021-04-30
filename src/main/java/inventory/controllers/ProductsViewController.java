@@ -88,6 +88,9 @@ public class ProductsViewController implements Initializable {
     private TableColumn<?, ?> inStockColumn;
 
     @FXML
+    private TableColumn<?, ?> idColumn;
+
+    @FXML
     private TextField priceTextField;
 
     @FXML
@@ -101,6 +104,9 @@ public class ProductsViewController implements Initializable {
 
     @FXML
     private Button refreshButton;
+
+    @FXML
+    private TextField productIdTextField;
 
     @FXML
     private TextField upcTextField;
@@ -135,6 +141,34 @@ public class ProductsViewController implements Initializable {
     public void initData(User user) {
         currentUser = user;
         usernameDisplay.setText("User: " + currentUser.GetUsername());
+
+        // product name column
+        idColumn = new TableColumn<>("Product ID");
+        productNameColumn.setMinWidth(100);
+
+        // UPC column
+        upcColumn = new TableColumn<Product, String>("UPC");
+        upcColumn.setMinWidth(200);
+
+        // product name column
+        productNameColumn = new TableColumn<>("Product Name");
+        productNameColumn.setMinWidth(200);
+
+        // in stock quantity column
+        inStockColumn = new TableColumn<>("Stock Quantity");
+        inStockColumn.setMinWidth(100);
+
+        // retail price column
+        retailPriceColumn = new TableColumn<>("Retail Price");
+        retailPriceColumn.setMinWidth(150);
+
+        // manufacturer column
+        manufacturerColumn = new TableColumn<>("Manufacturer");
+        manufacturerColumn.setMinWidth(200);
+
+        // subcategory column
+        subCategoryColumn = new TableColumn<>("Subcategory");
+        subCategoryColumn.setMinWidth(200);
     }
 
     /**
@@ -143,30 +177,6 @@ public class ProductsViewController implements Initializable {
     public void updateTable() {
 
         try {
-            // UPC column
-            upcColumn = new TableColumn<Product, String>("UPC");
-            upcColumn.setMinWidth(200);
-
-
-            // product name column
-            productNameColumn = new TableColumn<>("Product Name");
-            productNameColumn.setMinWidth(200);
-
-            // in stock quantity column
-            inStockColumn = new TableColumn<>("Stock Quantity");
-            inStockColumn.setMinWidth(100);
-
-            // retail price column
-            retailPriceColumn = new TableColumn<>("Retail Price");
-            retailPriceColumn.setMinWidth(150);
-
-            // manufacturer column
-            manufacturerColumn = new TableColumn<>("Manufacturer");
-            manufacturerColumn.setMinWidth(200);
-
-            // subcategory column
-            subCategoryColumn = new TableColumn<>("Subcategory");
-            subCategoryColumn.setMinWidth(200);
 
             // load the data from database into an observableList
             ArrayList<Product> arrayList = handler.getAllProducts();
@@ -197,6 +207,8 @@ public class ProductsViewController implements Initializable {
             }
             // if add radio button selected
             if (this.toggleGroup.getSelectedToggle().equals(this.addRadioBtn)) {
+                productIdTextField.setVisible(false);
+                productIdTextField.setManaged(false);
                 upcTextField.setVisible(true);
                 upcTextField.setManaged(true);
                 productNameTextField.setManaged(true);
@@ -214,6 +226,8 @@ public class ProductsViewController implements Initializable {
             }
             // else if delete selected, show only UPC and name text fields
             else if (this.toggleGroup.getSelectedToggle().equals(this.deleteRadioBtn)) {
+                productIdTextField.setVisible(true);
+                productIdTextField.setManaged(true);
                 upcTextField.setManaged(true);
                 productNameTextField.setManaged(true);
                 priceTextField.setVisible(false);
@@ -229,6 +243,8 @@ public class ProductsViewController implements Initializable {
             }
             // else if find selected, only show UPC and product name text fields
             else if (this.toggleGroup.getSelectedToggle().equals(this.findRadioBtn)) {
+                productIdTextField.setVisible(true);
+                productIdTextField.setManaged(true);
                 upcTextField.setManaged(true);
                 productNameTextField.setManaged(true);
                 priceTextField.setVisible(false);
@@ -246,7 +262,7 @@ public class ProductsViewController implements Initializable {
             e.printStackTrace();
         }
     }
-    
+
     public void submitButtonClicked() {
         try {
             buttonStatus.setText("");
@@ -296,7 +312,7 @@ public class ProductsViewController implements Initializable {
     }
 
     public void findProduct() {
-        Product foundProduct = null;
+        ArrayList<Product> foundProducts = null;
 
         try {
 
@@ -306,21 +322,39 @@ public class ProductsViewController implements Initializable {
             // if user is authorized for this action, let them do it, else return and notify user
             if (allowed) {
                 // get string versions of the input
+                String productIdString = productIdTextField.getText();
                 String upc = upcTextField.getText();
                 String productName = productNameTextField.getText();
 
-                if (upc == "" && productName == "") {
-                    buttonStatus.setText("Please enter a UPC or a product name to search for");
+                // if all textfields are blank, notify user
+                if (productIdString.isBlank() && upc.isBlank() && productName.isBlank()) {
+                    buttonStatus.setText("Please enter an ID, a UPC or a product name to search for");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
 
-                foundProduct = handler.getProductByUpcAndName(upc, productName);
+                // if ID was not blank, and it is not an integer, notify user
+                if (!productIdString.isBlank() && !ParseNumbers.isParsableInt(productIdString)) {
+                    buttonStatus.setText("*Make sure ID is in number format*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
-                if (foundProduct != null) {
+                int productId = 0;
+                // if user inputted an ID to search for, parse the integer, if not then leave var productId at 0
+                if (!productIdString.isBlank()) {
+                    // parse ID to integer
+                    productId = Integer.parseInt(productIdString);
+                }
+
+                foundProducts = handler.findProductsByIdOrUpcOrName(productId, upc, productName);
+
+                if (foundProducts != null) {
                     productsList.clear();
                     productsTable.getItems().clear();
-                    productsList.setAll(foundProduct);
+                    productsList = FXCollections.observableArrayList(foundProducts);
+
+                    // add the items to the JavaFX table
                     productsTable.setItems(productsList);
                 }
                 else {
@@ -345,19 +379,48 @@ public class ProductsViewController implements Initializable {
             // if user is authorized for this action, let them do it, else return and notify user
             if (allowed) {
                 // get string versions of the input
+                String productIdString = productIdTextField.getText();
                 String upc = upcTextField.getText();
                 String productName = productNameTextField.getText();
 
-                Product foundProduct = handler.getProductByUpcAndName(upc, productName);
+                // if all textfields are blank, notify user
+                if (productIdString.isBlank() && upc.isBlank() && productName.isBlank()) {
+                    buttonStatus.setText("Please enter an ID, a UPC or a product name to search for");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
-                if (foundProduct == null) {
+                // if user input for ID is not blank, and is not an integer, notify user
+                if (!productIdString.isBlank() && !ParseNumbers.isParsableInt(productIdString)) {
+                    buttonStatus.setText("*Make sure ID is in number format*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+
+                int productId = 0;
+                // if user inputted an ID to search for, parse the integer, if not then leave var productId at 0
+                if (!productIdString.isBlank()) {
+                    // parse ID to integer
+                    productId = Integer.parseInt(productIdString);
+                }
+
+                ArrayList<Product> foundProducts = handler.findProductsByIdOrUpcOrName(productId, upc, productName);
+
+                // if there was no products that matched that search criteria, notify user
+                if (foundProducts == null || foundProducts.size() == 0) {
                     buttonStatus.setText("There were no products matching the search criteria");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+                // else if there was more than 1 result
+                else if (foundProducts.size() != 1) {
+                    buttonStatus.setText("There were more than 1 product matching the search criteria");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
 
                 // show confirmation window for user to verify that they want to add the new product to the database
-                boolean confirmed = showPopup(currentUser, foundProduct, "delete");
+                boolean confirmed = showPopup(currentUser, foundProducts.get(0), "delete");
 
                 // if user says they don't want to delete the product, don't delete it
                 if (!confirmed) {
@@ -366,7 +429,7 @@ public class ProductsViewController implements Initializable {
                     return;
                 }
 
-                boolean added = handler.deleteProduct(foundProduct.getUpc());
+                boolean added = handler.deleteProduct(foundProducts.get(0).getUpc());
 
                 // if product was successfully deleted, notify user
                 if (added) {
@@ -421,28 +484,54 @@ public class ProductsViewController implements Initializable {
                 }
 
                 // if user input for quantity and price cannot be parsed to int and double, notify user
-                if (!ParseNumbers.isParsableInt(quantityString) || !ParseNumbers.isParsableDouble(priceString)) {
-                    buttonStatus.setText("*Make sure price and quantity are in number format*");
+                if (!ParseNumbers.isParsableInt(quantityString) ||
+                        !ParseNumbers.isParsableDouble(priceString)) {
+                    buttonStatus.setText("*Make sure ID, price, and quantity are in number format*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
 
-                // find corresponding manufacturer ID for the name input if exists
-                int manufacturerInt = assignManufacturerInt(manufacturer);
 
-                // if user input for manufacturer is not in database, notify user
-                if (manufacturerInt == 0) {
+                // find the manufacturer
+                ArrayList<Manufacturer> manufacturerList = handler.findManufacturersWithName(manufacturer);
+                // if the search got no results, notify user
+                if (manufacturerList.size() == 0) {
                     buttonStatus.setText("*Manufacturer name entered must already be in our database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
+                // if the search found more than 1 result, notify user
+                else if (manufacturerList.size() != 1) {
+                    buttonStatus.setText("*Manufacturer name entered must match exactly one name in the database*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
 
-                // find corresponding subcategory ID for the name input if exists
-                int subcategoryInt = assignSubcategoryInt(category);
+                // find the subcategory
+                ArrayList<Subcategory> subcategoryList = handler.findSubCategoriesWithName(category);
+
+//                // find corresponding manufacturer ID for the name input if exists
+//                int manufacturerInt = assignManufacturerInt(manufacturer);
+
+//                // if user input for manufacturer is not in database, notify user
+//                if (manufacturerInt == 0) {
+//                    buttonStatus.setText("*Manufacturer name entered must already be in our database*");
+//                    buttonStatus.setTextFill(Paint.valueOf("red"));
+//                    return;
+//                }
+//
+//                // find corresponding subcategory ID for the name input if exists
+//                int subcategoryInt = assignSubcategoryInt(category);
 
                 //  if user input for subcategory is not in database, notify user
-                if (subcategoryInt == 0) {
-                    buttonStatus.setText("*Category name entered must already be in our database*");
+                if (subcategoryList.size() == 0) {
+                    buttonStatus.setText("*Subcategory name entered must already be in our database*");
+                    buttonStatus.setTextFill(Paint.valueOf("red"));
+                    return;
+                }
+                // if the search found more than 1 result, notify user
+                else if (subcategoryList.size() != 1) {
+                    buttonStatus.setText("*Subcategory name entered must match exactly one name in the database*");
                     buttonStatus.setTextFill(Paint.valueOf("red"));
                     return;
                 }
@@ -451,9 +540,16 @@ public class ProductsViewController implements Initializable {
                 int quantity = Integer.parseInt(quantityString);
                 double price = Double.parseDouble(priceString);
 
-                Product newProduct = new Product(upc, productName, quantity, price, manufacturerInt, subcategoryInt);
-
-                System.out.println(newProduct.getManufacturerInt() + " / " + newProduct.getSubcategoryInt());
+                // create new product object
+                Product newProduct = new Product(upc,
+                        productName,
+                        quantity,
+                        price,
+                        manufacturerList.get(0).getManufacturerId(),
+                        subcategoryList.get(0).getSubcategoryId(),
+                        manufacturerList.get(0).getManufacturerName(),
+                        subcategoryList.get(0).getSubcategoryName()
+                );
 
                 // show confirmation window for user to verify that they want to add the new product to the database
                 boolean confirmed = showPopup(currentUser, newProduct, "add");

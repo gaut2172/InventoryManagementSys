@@ -64,7 +64,8 @@ public class AddDeleteTransactionsController {
 
         productIdLabel.setText(Integer.toString(theTransaction.getProductID()));
         quantityLabel.setText(Integer.toString(theTransaction.getOrderQuantity()));
-        totalPaidLabel.setText(String.format("%,.2f", theTransaction.getTotalPaid()));
+        System.out.println("getOrderQuantity() ->> " + theTransaction.getTotalPaid());
+        totalPaidLabel.setText(theTransaction.getTotalPaid());
         dateTimeLabel.setText(theTransaction.getDateTimeString());
         firstNameLabel.setText(theTransaction.getFirstName());
         lastNameLabel.setText(theTransaction.getLastName());

@@ -62,8 +62,8 @@ public class AddDeleteProductController {
                 productNameLabel.setText(theProduct.getProductName());
                 quantityLabel.setText(Integer.toString(theProduct.getQuantity()));
                 priceLabel.setText("$ " + Double.toString(theProduct.getPrice()));
-                manufacturerLabel.setText(Integer.toString(theProduct.getManufacturerInt()));
-                categoryLabel.setText(Integer.toString(theProduct.getSubcategoryInt()));
+                manufacturerLabel.setText(theProduct.getManufacturer());
+                categoryLabel.setText(theProduct.getSubcategory());
 
                 if (addOrDelete.equals("add")) {
                         messageLabel.setText("Are you sure you want to add this new product to the database?");

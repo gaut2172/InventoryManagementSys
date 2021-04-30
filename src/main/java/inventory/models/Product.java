@@ -19,17 +19,18 @@ public class Product {
 	}
 
 	/*
-	 * constructor with int manufacturer and subcategory, no productId
+	 * constructor with string manufacturer and subcategory, and with productId
 	 */
-	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory) {
+	public Product(int productId, String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
 		try {
 			if (quantity >= 0 && price >= 0) {
+				this.productID = new SimpleIntegerProperty(productId);
 				this.upc = new SimpleStringProperty(upc);
 				this.productName = new SimpleStringProperty(productName);
 				this.quantity = new SimpleIntegerProperty(quantity);
 				this.price = new SimpleDoubleProperty(price);
-				this.manufacturerInt = new SimpleIntegerProperty(manufacturer);
-				this.subcategoryInt = new SimpleIntegerProperty(subcategory);
+				this.manufacturer = new SimpleStringProperty(manufacturer);
+				this.subcategory = new SimpleStringProperty(subcategory);
 			}
 			else {
 				throw new ArithmeticException("Failed to create new instance of Product. quantity or price is a negative value");
@@ -42,7 +43,7 @@ public class Product {
 	}
 
 	/*
-	 * constructor with productId
+	 * constructor without productId
 	 */
 	public Product(String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
 		try {
@@ -62,11 +63,25 @@ public class Product {
 		}
 	}
 
-	public Product(String upc, String productName, int quantity, double price) {
+	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory) {
 		this.upc = new SimpleStringProperty(upc);
 		this.productName = new SimpleStringProperty(productName);
 		this.quantity = new SimpleIntegerProperty(quantity);
 		this.price = new SimpleDoubleProperty(price);
+		this.manufacturerInt = new SimpleIntegerProperty(manufacturer);
+		this.subcategoryInt = new SimpleIntegerProperty(subcategory);
+	}
+
+	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory,
+				   String manufacturerString, String subcategoryString) {
+		this.upc = new SimpleStringProperty(upc);
+		this.productName = new SimpleStringProperty(productName);
+		this.quantity = new SimpleIntegerProperty(quantity);
+		this.price = new SimpleDoubleProperty(price);
+		this.manufacturerInt = new SimpleIntegerProperty(manufacturer);
+		this.subcategoryInt = new SimpleIntegerProperty(subcategory);
+		this.manufacturer = new SimpleStringProperty(manufacturerString);
+		this.subcategory = new SimpleStringProperty(subcategoryString);
 	}
 
 

@@ -121,6 +121,64 @@ public class DBHandler {
 		
 		return result;
 	}
+
+
+	public Product getProductById(int id) {
+		Product foundProduct = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_products_1 WHERE productId = ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setInt(1, id);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each product to list
+			while (results.next()) {
+				foundProduct = new Product(results.getString(2), results.getString(3), results.getInt(4),
+						results.getDouble(5), results.getString(6), results.getString(7));
+			}
+			DBConnection.disconnect(conn);
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return foundProduct;
+	}
+
+
+	public Product getProductByUpc(String upc) {
+		Product foundProduct = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_products_1 WHERE upc = ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setString(1, upc);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each product to list
+			while (results.next()) {
+				foundProduct = new Product(results.getString(2), results.getString(3), results.getInt(4),
+						results.getDouble(5), results.getString(6), results.getString(7));
+			}
+			DBConnection.disconnect(conn);
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return foundProduct;
+	}
 	
 
 	public Product getProductByUpcAndName(String upc, String productName) {
@@ -198,6 +256,38 @@ public class DBHandler {
 
 		return foundProduct;
 	}
+
+
+	public boolean subtractProductQuantity(int amountToSubtract, String upc) {
+
+		boolean result = false;
+
+		try {
+			// parameterize SQL statement to stop SQL injections
+			String sql = "UPDATE product SET quantity = (quantity - ?) WHERE upc = ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setInt(1, amountToSubtract);
+			stmt.setString(2, upc);
+
+			// execute SQL command
+			int rowsUpdated = stmt.executeUpdate();
+
+			// were there any affected rows?
+			result = rowsUpdated >= 1;
+
+			// disconnect
+			DBConnection.disconnect(conn);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
 
 
 	public ArrayList<Product> getProductsWithLowStock() {
@@ -351,7 +441,7 @@ public class DBHandler {
 			
 			// iterate through ResultSet
 			while (results.next()) {
-				product = new Product(results.getString(2), results.getString(3), results.getInt(4),
+				product = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
 						results.getDouble(5), results.getString(6), results.getString(7));
 
 				productsList.add(product);
@@ -365,6 +455,89 @@ public class DBHandler {
 		}
 		
 		return productsList;
+	}
+
+
+	/**
+	 * Get all products that match search criteria for UPC and product name
+	 */
+	public ArrayList<Product> findProductsByIdOrUpcOrName(int productId, String upc, String productName) {
+		ArrayList<Product> productList = new ArrayList<>();
+		Product currProduct = null;
+
+
+		try {
+			String sql = null;
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			// if product name was empty, then just work with ID and UPC
+			if (productName.isBlank() && productId != 0) {
+				sql = "SELECT * FROM view_products_1 " +
+						"WHERE productId = ? OR " +
+						"upc = ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setInt(1, productId);
+				stmt.setString(2, upc);
+			}
+			// if the user only inputted a UPC and nothing else
+			else if (productId == 0 && productName.isBlank()) {
+				// parameterize SQL statement to deter SQL injection attacks
+				sql = "SELECT * FROM view_products_1 " +
+						"WHERE upc = ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setString(1, upc);
+				System.out.println("This WORKED!");
+			}
+			// if productID is 0, that means the user did not input an ID to search for
+			else if (productId == 0) {
+				// parameterize SQL statement to deter SQL injection attacks
+				sql = "SELECT * FROM view_products_1 " +
+						"WHERE upc = ? OR " +
+						"productName LIKE ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setString(1, upc);
+				stmt.setString(2, "%" + likeSanitize(productName) + "%");
+			}
+			// user entered a product ID, UPC, and name to search for
+			else {
+				// parameterize SQL statement to deter SQL injection attacks
+				sql = "SELECT * FROM view_products_1 " +
+						"WHERE productId = ? OR " +
+						"upc = ? OR " +
+						"productName LIKE ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setInt(1, productId);
+				stmt.setString(2, upc);
+				stmt.setString(3, "%" + likeSanitize(productName) + "%");
+			}
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each product to list
+			while (results.next()) {
+				currProduct = new Product(results.getInt(1), results.getString(2), results.getString(3), results.getInt(4),
+						results.getDouble(5), results.getString(6), results.getString(7));
+				productList.add(currProduct);
+			}
+			DBConnection.disconnect(conn);
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return productList;
 	}
 
 
@@ -442,9 +615,14 @@ public class DBHandler {
 
 			// iterate through ResultSet, adding each invoice to list
 			while (results.next()) {
-				Transaction currTransaction = new Transaction(results.getInt(1), results.getInt(2), results.getInt(3),
-						results.getString(4), results.getString(5), results.getString(6),
-						results.getString(7), results.getString(8));
+				Transaction currTransaction = new Transaction(results.getInt(1),
+						results.getInt(2),
+						results.getInt(3),
+						results.getString(4),
+						results.getString(5),
+						results.getString(6),
+						results.getString(7),
+						results.getString(8));
 				invoiceList.add(currTransaction);
 			}
 			DBConnection.disconnect(conn);
@@ -494,5 +672,194 @@ public class DBHandler {
 		}
 
 		return result;
+	}
+
+
+	public ArrayList<Transaction> findTransactionsWithCriteria(int orderId, int productId, String firstName, String lastName,
+															   String email) {
+		ArrayList<Transaction> foundTransactions = null;
+		Transaction currTransaction = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_invoice_customer_1 " +
+					"WHERE orderId = ? OR " +
+					"product = ? OR " +
+					"firstName LIKE ? OR " +
+					"lastName LIKE ? OR " +
+					"email LIKE ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setInt(1, orderId);
+			stmt.setInt(2, productId);
+			stmt.setString(3, "%" + likeSanitize(firstName) + "%");
+			stmt.setString(4, "%" + likeSanitize(lastName) + "%");
+			stmt.setString(5, "%" + likeSanitize(email) + "%");
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each product to list
+			while (results.next()) {
+				currTransaction = new Transaction(results.getInt(1),
+						results.getInt(2),
+						results.getInt(3),
+						results.getString(4),
+						results.getString(5),
+						results.getString(6),
+						results.getString(7),
+						results.getString(8)
+				);
+				foundTransactions.add(currTransaction);
+			}
+			DBConnection.disconnect(conn);
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return foundTransactions;
+	}
+
+
+	public ArrayList<Transaction> findTransactionsWithName(String firstName, String lastName) {
+		ArrayList<Transaction> foundTransactions = new ArrayList<>();
+		Transaction currTransaction = null;
+
+		try {
+			String sql = null;
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			// FIXME... if (firstName == "") THEN only work with lastname...
+			if (firstName == "" && lastName != "") {
+				sql = "SELECT * FROM view_invoice_customer_1 " +
+						"WHERE lastName LIKE ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setString(1, "%" + likeSanitize(lastName) + "%");
+			}
+			else if (firstName != "" && lastName == "") {
+				sql = "SELECT * FROM view_invoice_customer_1 " +
+						"WHERE firstName LIKE ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setString(1, "%" + likeSanitize(firstName) + "%");
+			}
+			else if (firstName != "" && lastName != "") {
+				// parameterize SQL statement to deter SQL injection attacks
+				sql = "SELECT * FROM view_invoice_customer_1 " +
+						"WHERE firstName LIKE ? OR " +
+						"lastName LIKE ?";
+				conn = DBConnection.getConnection();
+				stmt = conn.prepareStatement(sql);
+
+				// insert values into prepared statement
+				stmt.setString(1, "%" + likeSanitize(firstName) + "%");
+				stmt.setString(2, "%" + likeSanitize(lastName) + "%");
+			}
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each product to list
+			while (results.next()) {
+				currTransaction = new Transaction(results.getInt(1),
+						results.getInt(2),
+						results.getInt(3),
+						results.getString(4),
+						results.getString(5),
+						results.getString(6),
+						results.getString(7),
+						results.getString(8)
+				);
+				foundTransactions.add(currTransaction);
+			}
+			DBConnection.disconnect(conn);
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return foundTransactions;
+	}
+
+
+	public ArrayList<Manufacturer> findManufacturersWithName(String nameInput) {
+		ArrayList<Manufacturer> foundManufacturers = new ArrayList<>();
+		Manufacturer currManufacturer = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_manufacturers_1 " +
+					"WHERE manufacturerName = ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setString(1, nameInput);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each manufacturer to list
+			while (results.next()) {
+				currManufacturer = new Manufacturer(results.getInt(1),
+						results.getString(2)
+				);
+				foundManufacturers.add(currManufacturer);
+			}
+			DBConnection.disconnect(conn);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return foundManufacturers;
+	}
+
+
+	public ArrayList<Subcategory> findSubCategoriesWithName(String nameInput) {
+		ArrayList<Subcategory> foundSubcategories = new ArrayList<>();
+		Subcategory currSubcategory = null;
+
+		try {
+			// parameterize SQL statement to deter SQL injection attacks
+			String sql = "SELECT * FROM view_subcategories_1 " +
+					"WHERE subcategoryName = ?";
+			Connection conn = DBConnection.getConnection();
+			PreparedStatement stmt = conn.prepareStatement(sql);
+
+			// insert values into prepared statement
+			stmt.setString(1, nameInput);
+
+			// execute SQL command and record results
+			ResultSet results = stmt.executeQuery();
+
+			// iterate through ResultSet, adding each manufacturer to list
+			while (results.next()) {
+				currSubcategory = new Subcategory(results.getInt(1),
+						results.getString(2)
+				);
+				foundSubcategories.add(currSubcategory);
+			}
+			DBConnection.disconnect(conn);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return foundSubcategories;
+	}
+
+
+	public static String likeSanitize(String input) {
+		return input
+				.replace("!", "!!")
+				.replace("%", "!%")
+				.replace("_", "!_")
+				.replace("[", "![");
 	}
 }
