@@ -1,6 +1,5 @@
 package models;
 
-
 import inventory.models.Product;
 import org.junit.Before;
 import org.junit.Test;

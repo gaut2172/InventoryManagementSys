@@ -34,6 +34,8 @@
             <artifactId>javafx-controls</artifactId>
             <version>15.0.1</version>
         </dependency>
+
+        <!-- JUnit testing framework -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -54,6 +56,7 @@
                 </configuration>
             </plugin>
 
+            <!-- Dependency checker for finding software vulnerabilities in dependencies -->
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
@@ -75,21 +78,6 @@
                     <mainClass>HelloFX</mainClass>
                 </configuration>
             </plugin>
-
-            <!-- Dependency checker for finding software vulnerabilities in dependencies -->
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>5.3.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
 
         </plugins>
     </build>
