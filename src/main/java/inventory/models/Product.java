@@ -48,6 +48,7 @@ public class Product {
 	public Product(String upc, String productName, int quantity, double price, String manufacturer, String subcategory) {
 		try {
 			if (quantity >= 0 && price >= 0) {
+				this.productID = new SimpleIntegerProperty();
 				this.upc = new SimpleStringProperty(upc);
 				this.productName = new SimpleStringProperty(productName);
 				this.quantity = new SimpleIntegerProperty(quantity);
@@ -63,17 +64,9 @@ public class Product {
 		}
 	}
 
-	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory) {
-		this.upc = new SimpleStringProperty(upc);
-		this.productName = new SimpleStringProperty(productName);
-		this.quantity = new SimpleIntegerProperty(quantity);
-		this.price = new SimpleDoubleProperty(price);
-		this.manufacturerInt = new SimpleIntegerProperty(manufacturer);
-		this.subcategoryInt = new SimpleIntegerProperty(subcategory);
-	}
-
 	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory,
 				   String manufacturerString, String subcategoryString) {
+		this.productID = new SimpleIntegerProperty();
 		this.upc = new SimpleStringProperty(upc);
 		this.productName = new SimpleStringProperty(productName);
 		this.quantity = new SimpleIntegerProperty(quantity);
@@ -83,6 +76,15 @@ public class Product {
 		this.manufacturer = new SimpleStringProperty(manufacturerString);
 		this.subcategory = new SimpleStringProperty(subcategoryString);
 	}
+
+//	public Product(String upc, String productName, int quantity, double price, int manufacturer, int subcategory) {
+//		this.upc = new SimpleStringProperty(upc);
+//		this.productName = new SimpleStringProperty(productName);
+//		this.quantity = new SimpleIntegerProperty(quantity);
+//		this.price = new SimpleDoubleProperty(price);
+//		this.manufacturerInt = new SimpleIntegerProperty(manufacturer);
+//		this.subcategoryInt = new SimpleIntegerProperty(subcategory);
+//	}
 
 
 	public int getProductID() { return productID.get(); }
@@ -128,4 +130,8 @@ public class Product {
 	public void setSubcategoryInt(int subcategory) {
 		this.subcategoryInt.set(subcategory);
 	}
+
+	public void setManufacturer(String manufacturer) { this.manufacturer.set(manufacturer); }
+
+	public void setSubcategory(String subcategory) { this.subcategory.set(subcategory); }
 }
