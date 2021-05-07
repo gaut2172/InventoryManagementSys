@@ -77,5 +77,7 @@ https://www.youtube.com/watch?v=lZ4ezDjAOmQ
    instructions on setting up DOM, visit: 
    https://www.tutorialspoint.com/java_xml/java_dom_parse_document.htm
 7. **FXML** - An XML-based language that provides a separate structure
-   for UI components. A tutorial for FXML can be found at:
+   for UI components. A tutorial for FXML can be found at: 
    https://docs.oracle.com/javafx/2/fxml_get_started/why_use_fxml.htm#CHDCHIBE
+8. **JUnit** - A unit testing framework for Java. For more information on
+   JUnit4, visit: https://junit.org/junit4/
