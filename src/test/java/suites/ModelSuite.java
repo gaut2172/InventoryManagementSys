@@ -10,8 +10,5 @@ import org.junit.runners.Suite;
         TestProduct.class
 })
 
-/**
- * Run all model tests in this application
- */
 public class ModelSuite {
 }

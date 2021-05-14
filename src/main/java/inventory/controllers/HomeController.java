@@ -1,7 +1,7 @@
 package inventory.controllers;
 
 import inventory.models.Product;
-import inventory.models.Row;
+import inventory.services.Row;
 import inventory.models.User;
 import inventory.services.DBHandler;
 import javafx.collections.FXCollections;

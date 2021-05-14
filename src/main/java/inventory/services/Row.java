@@ -1,4 +1,4 @@
-package inventory.models;
+package inventory.services;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

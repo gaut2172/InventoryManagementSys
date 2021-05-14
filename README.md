@@ -54,6 +54,10 @@ https://www.youtube.com/watch?v=lZ4ezDjAOmQ
 ![Transactions window:](src/main/resources/screenshots/Transactions_4-30-21.jpg)
 <br/><br/>
 ![Add transactions window:](src/main/resources/screenshots/AddTransaction_4-30-21.jpg)
+<br/><br/>
+
+# UML Class Diagram:
+![Add transactions window:](src/main/resources/UML/Class_Diagram.jpg)
 
 # Tools Used:
 1. **Java** - A general-purpose, object-oriented programming language. For more
@@ -81,3 +85,9 @@ https://www.youtube.com/watch?v=lZ4ezDjAOmQ
    https://docs.oracle.com/javafx/2/fxml_get_started/why_use_fxml.htm#CHDCHIBE
 8. **JUnit** - A unit testing framework for Java. For more information on
    JUnit4, visit: https://junit.org/junit4/
+
+<object data="InventoryManagementSys_Class_Diagram.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="InventoryManagementSys_Class_Diagram.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="InventoryManagementSys_Class_Diagram.pdf">Download PDF</a>.</p>
+    </embed>
+</object>

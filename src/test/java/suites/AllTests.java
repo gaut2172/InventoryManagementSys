@@ -9,8 +9,6 @@ import org.junit.runners.Suite;
         ModelSuite.class
 })
 
-/**
- * Run all tests in this application
- */
+// Run all tests in this application
 public class AllTests {
 }
