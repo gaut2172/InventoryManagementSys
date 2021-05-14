@@ -85,9 +85,3 @@ https://www.youtube.com/watch?v=lZ4ezDjAOmQ
    https://docs.oracle.com/javafx/2/fxml_get_started/why_use_fxml.htm#CHDCHIBE
 8. **JUnit** - A unit testing framework for Java. For more information on
    JUnit4, visit: https://junit.org/junit4/
-
-<object data="InventoryManagementSys_Class_Diagram.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="InventoryManagementSys_Class_Diagram.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="InventoryManagementSys_Class_Diagram.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
