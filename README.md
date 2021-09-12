@@ -63,7 +63,7 @@ https://www.youtube.com/watch?v=lZ4ezDjAOmQ
 1. **Java** - A general-purpose, object-oriented programming language. For more
    information about Java SE, visit: 
    https://docs.oracle.com/en/java/javase/16/
-2. **MySQL** - An open-source relational database management system. 
+2. **MySQL** - An open-source relational database management system.
    For more information about MySQL, read the documentation website at:
    https://dev.mysql.com/doc/
 3. **JavaFX** - An open-source client application platform. It is used in 
